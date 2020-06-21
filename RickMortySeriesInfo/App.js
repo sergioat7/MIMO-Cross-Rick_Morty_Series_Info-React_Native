@@ -4,7 +4,7 @@ import { View, Image } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
-import Icon from 'react-native-vector-icons/Ionicons';
+import AsyncStorage from '@react-native-community/async-storage';
 import CharacterList from './src/components/CharacterList'
 import LocationList from './src/components/LocationList'
 import EpisodeList from './src/components/EpisodeList'
@@ -24,10 +24,12 @@ export default class App extends Component<Props> {
   }
 
   componentDidMount() {
-    this.createMainNavigation();
+    AsyncStorage.getItem('lastSelectedTab').then((lastSelectedTab) => {
+      this.createMainNavigation(lastSelectedTab);
+    });
   }
 
-  createMainNavigation() {
+  createMainNavigation(initialTab) {
 
     this.caractersStack = () => {
       return (
@@ -54,8 +56,16 @@ export default class App extends Component<Props> {
     };
     
     this.mainTab = () => {
+
+      function tabBarOnPress(tabName) {
+        return (event) => {
+          AsyncStorage.setItem('lastSelectedTab', tabName);
+        };
+      };
+
       return (
         <Tab.Navigator
+          initialRouteName={initialTab}
           backBehavior="none"
           tabBarOptions={{
             activeTintColor: '#00afc7',
@@ -63,6 +73,7 @@ export default class App extends Component<Props> {
           <Tab.Screen
             name="characters"
             component={this.caractersStack}
+            listeners={{ tabPress: tabBarOnPress("characters") }}
             options={{
               tabBarLabel: 'Characters',
               tabBarIcon: () => (
@@ -72,6 +83,7 @@ export default class App extends Component<Props> {
           <Tab.Screen
             name="locations"
             component={this.locationsStack}
+            listeners={{ tabPress: tabBarOnPress("locations") }}
             options={{
               tabBarLabel: 'Locations',
               tabBarIcon: () => (
@@ -81,6 +93,7 @@ export default class App extends Component<Props> {
           <Tab.Screen
             name="episodes"
             component={this.episodesStack}
+            listeners={{ tabPress: tabBarOnPress("episodes") }}
             options={{
               tabBarLabel: 'Episodes',
               tabBarIcon: () => (
