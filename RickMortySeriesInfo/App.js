@@ -1,6 +1,6 @@
 import 'react-native-gesture-handler';
 import React, { Component } from 'react';
-import { View } from 'react-native';
+import { View, Image } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -40,7 +40,7 @@ export default class App extends Component<Props> {
     this.locationsStack = () => {
       return (
         <Stack.Navigator>
-          <Stack.Screen name="Location" component={LocationList} />
+          <Stack.Screen name="Locations" component={LocationList} />
         </Stack.Navigator>
       );
     };
@@ -55,14 +55,18 @@ export default class App extends Component<Props> {
     
     this.mainTab = () => {
       return (
-        <Tab.Navigator>
+        <Tab.Navigator
+          backBehavior="none"
+          tabBarOptions={{
+            activeTintColor: '#00afc7',
+          }}>
           <Tab.Screen
             name="characters"
             component={this.caractersStack}
             options={{
               tabBarLabel: 'Characters',
-              tabBarIcon: ({ color, size }) => (
-                <Icon name='ios-heart' size={size} color={color} />
+              tabBarIcon: () => (
+                <Image source={require('./src/assets/characters.png')} />
               ),
             }} />
           <Tab.Screen
@@ -70,8 +74,8 @@ export default class App extends Component<Props> {
             component={this.locationsStack}
             options={{
               tabBarLabel: 'Locations',
-              tabBarIcon: ({ color, size }) => (
-                <Icon name='ios-heart' size={size} color={color} />
+              tabBarIcon: () => (
+                <Image source={require('./src/assets/locations.png')} />
               ),
             }} />
           <Tab.Screen
@@ -79,8 +83,8 @@ export default class App extends Component<Props> {
             component={this.episodesStack}
             options={{
               tabBarLabel: 'Episodes',
-              tabBarIcon: ({ color, size }) => (
-                <Icon name='ios-heart' size={size} color={color} />
+              tabBarIcon: () => (
+                <Image source={require('./src/assets/episodes.png')} />
               ),
             }} />
         </Tab.Navigator>
