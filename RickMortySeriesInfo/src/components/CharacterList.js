@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import { View } from 'react-native';
+import { View, FlatList } from 'react-native';
 import RickAndMortyApiClient from '../api/RickAndMortyApiClient'
+import CharacterRow from '../views/CharacterRow'
 
 export default class CharacterList extends Component {
 
@@ -31,8 +32,14 @@ export default class CharacterList extends Component {
 
     this.loadPage(this.nextPage)
         .then( ({resultCharacters, numberOfPages}) => {
-          //TODO map characters
-          console.log(resultCharacters);
+
+          let characters = resultCharacters.map( (character) => {
+            return {
+              key: character.id.toString(),
+              character: character
+            }
+          })
+          this.setState({ characters: this.state.characters.concat(characters) });
           this.nextPage++;
           this.numberOfPages = numberOfPages;
         })
@@ -50,7 +57,32 @@ export default class CharacterList extends Component {
   
   render() {
     return (
-      <View />
+      <View>
+        <FlatList 
+          data={this.state.characters}
+          renderItem={ this.renderRow.bind(this) }
+          onEndReached={() => {
+            this.loadNextPage();
+          }}
+          >
+        </FlatList>
+      </View>
       );
+    }
+
+    renderRow(rowInfo) {
+
+      item = rowInfo.item;
+      character = item.character;
+      return (
+        <CharacterRow 
+          character={character}
+          onPress={this.onCharacterPressed.bind(this, character)}
+        />
+      );
+    }
+  
+    onCharacterPressed(character) {
+      console.log(character)
     }
 }

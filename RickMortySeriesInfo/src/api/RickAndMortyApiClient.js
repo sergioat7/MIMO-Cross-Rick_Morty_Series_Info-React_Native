@@ -4,7 +4,7 @@ export default class RickAndMortyApiClient {
 
     getCharacters(page) {
         
-        let url = `${RickAndMortyApiClient.BASE_URL}/character`;
+        let url = `${RickAndMortyApiClient.BASE_URL}/character?page=${page}`;
         return fetch(url)
                 .then( response => response.json() )
                 .then( responseJSON => ({
