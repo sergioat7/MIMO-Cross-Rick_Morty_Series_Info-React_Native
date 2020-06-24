@@ -1,5 +1,10 @@
 import React, { Component } from 'react';
-import { View, FlatList } from 'react-native';
+import {
+  View,
+  FlatList,
+  ActivityIndicator,
+  StyleSheet
+} from 'react-native';
 import RickAndMortyApiClient from '../api/RickAndMortyApiClient'
 import CharacterRow from '../views/CharacterRow'
 
@@ -57,14 +62,15 @@ export default class CharacterList extends Component {
   
   render() {
     return (
-      <View>
+      <View style={styles.container}>
+      {/* <ActivityIndicator size="large" color="#0000ff" animating={this.isLoading} /> */}
         <FlatList 
           data={this.state.characters}
           renderItem={ this.renderRow.bind(this) }
           onEndReached={() => {
             this.loadNextPage();
           }}
-          >
+        >
         </FlatList>
       </View>
       );
@@ -75,8 +81,9 @@ export default class CharacterList extends Component {
       item = rowInfo.item;
       character = item.character;
       return (
-        <CharacterRow 
+        <CharacterRow
           character={character}
+          showStatus={false}
           onPress={this.onCharacterPressed.bind(this, character)}
         />
       );
@@ -86,3 +93,12 @@ export default class CharacterList extends Component {
       console.log(character)
     }
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'stretch',
+    backgroundColor: '#f5fcff',
+  },
+});
