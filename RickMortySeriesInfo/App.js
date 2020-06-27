@@ -8,6 +8,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import CharacterList from './src/components/CharacterList'
 import LocationList from './src/components/LocationList'
 import EpisodeList from './src/components/EpisodeList'
+import CharacterDetails from './src/components/CharacterDetails'
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -35,6 +36,7 @@ export default class App extends Component<Props> {
       return (
         <Stack.Navigator>
           <Stack.Screen name="Characters" component={CharacterList} />
+          <Stack.Screen name="CharacterDetails" component={CharacterDetails} />
         </Stack.Navigator>
       );
     };

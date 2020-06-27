@@ -73,25 +73,25 @@ export default class CharacterList extends Component {
         >
         </FlatList>
       </View>
-      );
-    }
+    );
+  }
 
-    renderRow(rowInfo) {
-
-      item = rowInfo.item;
-      character = item.character;
-      return (
-        <CharacterRow
-          character={character}
-          showStatus={false}
-          onPress={this.onCharacterPressed.bind(this, character)}
-        />
-      );
-    }
+  renderRow(rowInfo) {
+    
+    item = rowInfo.item;
+    character = item.character;
+    return (
+      <CharacterRow
+        character={character}
+        showStatus={false}
+        onPress={this.onCharacterPressed.bind(this, character)}
+      />
+    );
+  }
   
-    onCharacterPressed(character) {
-      console.log(character)
-    }
+  onCharacterPressed(character) {
+    this.props.navigation.navigate('CharacterDetails', { character: character });
+  }
 }
 
 const styles = StyleSheet.create({
