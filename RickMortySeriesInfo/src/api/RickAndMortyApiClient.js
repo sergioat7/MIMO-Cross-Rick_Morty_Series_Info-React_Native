@@ -12,4 +12,11 @@ export default class RickAndMortyApiClient {
                     numberOfPages: responseJSON.info.pages
                 }) );
     }
+
+    getCharacter(characterId) {
+        
+        let url = `${RickAndMortyApiClient.BASE_URL}/character/${characterId}`;
+        return fetch(url)
+                .then( response => response.json() );
+    }
 }
