@@ -92,7 +92,7 @@ export default class CharacterList extends Component {
     }
     
     onCharacterPressed(character) {
-        this.props.navigation.navigate('CharacterDetails', { characterId: character.id, characterName: character.name });
+        this.props.navigation.navigate('CharacterDetails', { characterId: character.id });
     }
 }
 

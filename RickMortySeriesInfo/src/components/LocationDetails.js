@@ -22,7 +22,7 @@ export default class LocationDetails extends Component {
         this.isLoading = true;
     
         props.navigation.setOptions({
-          title: params.locationName,
+          title: "",
         });
     }
   
@@ -32,6 +32,9 @@ export default class LocationDetails extends Component {
             .then( location => {
                 this.isLoading = false;
                 this.setState({ location: location });
+                this.props.navigation.setOptions({
+                    title: location.name,
+                });
             })
             .catch( error => {
                 console.error(error)
