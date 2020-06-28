@@ -19,4 +19,15 @@ export default class RickAndMortyApiClient {
         return fetch(url)
                 .then( response => response.json() );
     }
+
+    getLocations(page) {
+        
+        let url = `${RickAndMortyApiClient.BASE_URL}/location?page=${page}`;
+        return fetch(url)
+                .then( response => response.json() )
+                .then( responseJSON => ({
+                    resultLocations: responseJSON.results,
+                    numberOfPages: responseJSON.info.pages
+                }) );
+    }
 }
