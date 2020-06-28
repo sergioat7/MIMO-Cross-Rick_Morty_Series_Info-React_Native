@@ -32,12 +32,12 @@ export default class CharacterDetails extends Component {
   
     componentDidMount() {
 
-        this.apiClient.getCharacter(this.characterId)
-            .then( character => {
+        this.apiClient.getCharacter([this.characterId])
+            .then( characters => {
                 this.isLoading = false;
-                this.setState({ character: character });
+                this.setState({ character: characters[0] });
                 this.props.navigation.setOptions({
-                    title: character.name,
+                    title: characters[0].name,
                 });
             })
             .catch( error => {
@@ -242,8 +242,7 @@ const styles = StyleSheet.create({
         marginVertical: 5,
     },
     episodesContainer: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
+        flexDirection: 'column',
         marginTop: 20,
     },
     episodeTitle: {

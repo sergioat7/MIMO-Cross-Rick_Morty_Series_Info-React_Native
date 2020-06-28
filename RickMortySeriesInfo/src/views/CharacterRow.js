@@ -99,6 +99,6 @@ const styles = StyleSheet.create({
     },
     image: {
         width: 50,
-        height: 75,
+        height: 50,
     }
 });

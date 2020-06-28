@@ -13,9 +13,15 @@ export default class RickAndMortyApiClient {
                 }) );
     }
 
-    getCharacter(characterId) {
+    getCharacter(characterIds) {
+
+        var ids = ""
+        for (i in characterIds) {
+            ids += characterIds[i]
+            ids += ","
+        }
         
-        let url = `${RickAndMortyApiClient.BASE_URL}/character/${characterId}`;
+        let url = `${RickAndMortyApiClient.BASE_URL}/character/${ids}`;
         return fetch(url)
                 .then( response => response.json() );
     }
