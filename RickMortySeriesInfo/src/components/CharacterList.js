@@ -70,8 +70,7 @@ export default class CharacterList extends Component {
           onEndReached={() => {
             this.loadNextPage();
           }}
-        >
-        </FlatList>
+        />
       </View>
     );
   }
