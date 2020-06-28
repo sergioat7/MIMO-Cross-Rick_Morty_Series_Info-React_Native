@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import {
-  View,
-  Animated,
-  StyleSheet,
-  Text,
-  ActivityIndicator,
+    View,
+    Animated,
+    StyleSheet,
+    Text,
+    ActivityIndicator,
 } from 'react-native';
 import RickAndMortyApiClient from '../api/RickAndMortyApiClient'
 
@@ -17,7 +17,7 @@ export default class CharacterDetails extends Component {
         this.posterAlpha = new Animated.Value(0);
         this.posterScale = new Animated.Value(0.5);
         this.scrollValue = new Animated.Value(0);
-        this.characterId = params.character.id;
+        this.characterId = params.characterId;
         this.state = {
             character: null,
             initialAnimation: true,
@@ -26,7 +26,7 @@ export default class CharacterDetails extends Component {
         this.isLoading = true;
     
         props.navigation.setOptions({
-          title: params.character.name,
+          title: params.characterName,
         });
     }
   
@@ -35,9 +35,6 @@ export default class CharacterDetails extends Component {
         this.apiClient.getCharacter(this.characterId)
             .then( character => {
                 this.setState({ character: character });
-                // props.navigation.setOptions({
-                //   title: character.name,
-                // });
             })
             .catch( error => {
                 console.error(error)
@@ -47,35 +44,35 @@ export default class CharacterDetails extends Component {
             });
     
         Animated.sequence([
-          Animated.parallel([
-            Animated.timing(this.posterAlpha, {
-              duration: 1000,
-              toValue: 1,
-              useNativeDriver: true,
+            Animated.parallel([
+                Animated.timing(this.posterAlpha, {
+                    duration: 1000,
+                    toValue: 1,
+                    useNativeDriver: true,
+                }),
+                Animated.spring(this.posterScale, {
+                    speed: 1,
+                    bounciness: 10,
+                    toValue: 1,
+                    useNativeDriver: true,
+                }),
+            ]),
+            Animated.timing(this.posterScale, {
+                toValue: -1,
+                duration: 1000,
+                useNativeDriver: true,
             }),
-            Animated.spring(this.posterScale, {
-              speed: 1,
-              bounciness: 10,
-              toValue: 1,
-              useNativeDriver: true,
+            Animated.timing(this.posterScale, {
+                toValue: 1,
+                delay: 1000,
+                duration: 1000,
+                useNativeDriver: true,
             }),
-          ]),
-          Animated.timing(this.posterScale, {
-            toValue: -1,
-            duration: 1000,
-            useNativeDriver: true,
-          }),
-          Animated.timing(this.posterScale, {
-            toValue: 1,
-            delay: 1000,
-            duration: 1000,
-            useNativeDriver: true,
-          }),
         ]).start(() => {
-          this.setState({
-            ...this.state,
-            initialAnimation: false,
-          })
+            this.setState({
+                ...this.state,
+                initialAnimation: false,
+            })
         });
     }
     
@@ -105,19 +102,18 @@ export default class CharacterDetails extends Component {
                 )}
                 scrollEventThrottle={16}
             >
-              {this.renderHeader(character)}
-              {this.renderEpisodes(character)}
-              {/* <MyCustomView style={{width: 100, height: 100}} title={movie.title} onDoubleTap={() => alert('double tap!!')} /> */}
+                {this.renderHeader(character)}
+                {this.renderEpisodes(character)}
             </Animated.ScrollView>
           );
     }
 
     renderHeader(character) {
-
-      var species = character.species
-      if (character.type != "") {
-        species += " (" + character.type + ")"
-      }
+        
+        var species = character.species
+        if (character.type != "") {
+            species += " (" + character.type + ")"
+        }
         
         return (
             <View style={styles.headerContainer}>
@@ -138,12 +134,22 @@ export default class CharacterDetails extends Component {
                 <View style={styles.infoContainer}>
                     <Text style={styles.infoTitle}>{species} / {character.gender}</Text>
                     <View style={styles.infoTitle}>
-                      <Text>Origin: </Text>
-                      <Text style={styles.infoLink} onPress={this.onLocationPressed.bind(this, character.origin.url)}>{character.origin.name}</Text>
+                        <Text>Origin: </Text>
+                        <Text
+                            style={styles.infoLink}
+                            onPress={this.onLocationPressed.bind(this, character.origin.url)}
+                        >
+                            {character.origin.name}
+                        </Text>
                     </View>
                     <View style={styles.infoTitle}>
-                      <Text>Currently on:</Text>
-                      <Text style={styles.infoLink} onPress={this.onLocationPressed.bind(this, character.location.url)}>{character.location.name}</Text>
+                        <Text>Currently on:</Text>
+                        <Text
+                            style={styles.infoLink}
+                            onPress={this.onLocationPressed.bind(this, character.location.url)}
+                        >
+                            {character.location.name}
+                        </Text>
                     </View>
                 </View>
             </View>
@@ -161,7 +167,11 @@ export default class CharacterDetails extends Component {
                 <Text style={styles.episodeTitle}>Episodes:</Text>
                 {character.episode.map( episode => {
                     return (
-                        <Text style={styles.episode} key={episode} onPress={this.onEpisodePressed.bind(this, episode)}>
+                        <Text
+                            style={styles.episode}
+                            key={episode}
+                            onPress={this.onEpisodePressed.bind(this, episode)}
+                        >
                             - {episode}
                         </Text>
                     )}
@@ -171,7 +181,7 @@ export default class CharacterDetails extends Component {
     }
 
     onLocationPressed(locationUrl) {
-      console.log(locationUrl)
+        console.log(locationUrl)
     }
 
     onEpisodePressed(episode) {
@@ -186,49 +196,49 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         color: '#0000ff',
     },
-  container: {
-    flex: 0,
-    padding: 10,
-    justifyContent: 'flex-start',
-    alignItems: 'stretch',
-  },
-  headerContainer: {
-    flex: 0,
-    justifyContent: 'center',
-    flexDirection: 'row',
-    marginBottom: 5,
-  },
-  image: {
-    width: 150,
-    height: 150,
-  },
-  infoContainer: {
-    flex: 1,
-    marginLeft: 10,
-    justifyContent: 'center',
-  },
-  infoTitle: {
-    marginVertical: 3,
-  },
-  infoLink: {
-    color: 'blue',
-  },
-  item: {
-    marginVertical: 5,
-  },
-  episodesContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginTop: 20,
-  },
-  episodeTitle: {
-    fontWeight: 'bold',
-    fontSize: 17,
-  },
-  episode: {
-    paddingHorizontal: 2,
-    marginHorizontal: 2,
-    marginVertical: 5,
-    color: 'blue'
-  },
+    container: {
+        flex: 0,
+        padding: 10,
+        justifyContent: 'flex-start',
+        alignItems: 'stretch',
+    },
+    headerContainer: {
+        flex: 0,
+        justifyContent: 'center',
+        flexDirection: 'row',
+        marginBottom: 5,
+    },
+    image: {
+        width: 150,
+        height: 150,
+    },
+    infoContainer: {
+        flex: 1,
+        marginLeft: 10,
+        justifyContent: 'center',
+    },
+    infoTitle: {
+        marginVertical: 3,
+    },
+    infoLink: {
+        color: 'blue',
+    },
+    item: {
+        marginVertical: 5,
+    },
+    episodesContainer: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        marginTop: 20,
+    },
+    episodeTitle: {
+        fontWeight: 'bold',
+        fontSize: 17,
+    },
+    episode: {
+        paddingHorizontal: 2,
+        marginHorizontal: 2,
+        marginVertical: 5,
+        color: 'blue'
+    },
 });
