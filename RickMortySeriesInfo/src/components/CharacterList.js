@@ -81,8 +81,7 @@ export default class CharacterList extends Component {
         
     renderRow(rowInfo) {
         
-        item = rowInfo.item;
-        character = item.character;
+        var character = rowInfo.item.character;
         return (
             <CharacterRow
                 character={character}
@@ -93,7 +92,7 @@ export default class CharacterList extends Component {
     }
     
     onCharacterPressed(character) {
-        this.props.navigation.navigate('CharacterDetails', { characterId: character.id, characterName: character.name });
+        this.props.navigation.navigate('CharacterDetails', { characterId: character.id });
     }
 }
 

@@ -82,8 +82,7 @@ export default class LocationList extends Component {
         
     renderRow(rowInfo) {
         
-        item = rowInfo.item;
-        location = item.location;
+        var location = rowInfo.item.location;
         return (
             <LocationRow
                 location={location}
@@ -93,7 +92,7 @@ export default class LocationList extends Component {
     }
     
     onLocationPressed(location) {
-        console.log(location)
+        this.props.navigation.navigate('LocationDetails', { locationId: location.id });
     }
 }
 

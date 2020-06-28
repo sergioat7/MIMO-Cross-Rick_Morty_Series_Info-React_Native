@@ -26,22 +26,23 @@ export default class CharacterDetails extends Component {
         this.isLoading = true;
     
         props.navigation.setOptions({
-          title: params.characterName,
+          title: "",
         });
     }
   
     componentDidMount() {
 
-        this.apiClient.getCharacter(this.characterId)
-            .then( character => {
-                this.setState({ character: character });
+        this.apiClient.getCharacter([this.characterId])
+            .then( characters => {
+                this.isLoading = false;
+                this.setState({ character: characters[0] });
+                this.props.navigation.setOptions({
+                    title: characters[0].name,
+                });
             })
             .catch( error => {
                 console.error(error)
             })
-            .finally( () => {
-              this.isLoading = false;
-            });
     
         Animated.sequence([
             Animated.parallel([
@@ -193,14 +194,12 @@ export default class CharacterDetails extends Component {
     onLocationPressed(locationUrl) {
 
         var locationId = locationUrl.split("/").pop()
-        console.log(locationId)
-        //TODO show location detail
+        this.props.navigation.navigate('LocationDetails', { locationId: locationId});
     }
 
     onEpisodePressed(episodeUrl) {
 
         var episodeId = episodeUrl.split("/").pop()
-        console.log(episodeId)
         //TODO show episode detail
     }
 }
@@ -243,8 +242,7 @@ const styles = StyleSheet.create({
         marginVertical: 5,
     },
     episodesContainer: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
+        flexDirection: 'column',
         marginTop: 20,
     },
     episodeTitle: {
