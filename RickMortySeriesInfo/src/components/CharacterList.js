@@ -81,8 +81,7 @@ export default class CharacterList extends Component {
         
     renderRow(rowInfo) {
         
-        item = rowInfo.item;
-        character = item.character;
+        var character = rowInfo.item.character;
         return (
             <CharacterRow
                 character={character}

@@ -12,6 +12,7 @@ import CharacterList from './src/components/CharacterList'
 import LocationList from './src/components/LocationList'
 import EpisodeList from './src/components/EpisodeList'
 import CharacterDetails from './src/components/CharacterDetails'
+import LocationDetails from './src/components/LocationDetails'
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -36,11 +37,11 @@ export default class App extends Component<Props> {
     
     createMainNavigation(initialTab) {
         
-        this.caractersStack = () => {
+        this.charactersStack = () => {
             return (
                 <Stack.Navigator>
-                <Stack.Screen name="Characters" component={CharacterList} />
-                <Stack.Screen name="CharacterDetails" component={CharacterDetails} />
+                    <Stack.Screen name="Characters" component={CharacterList} />
+                    <Stack.Screen name="CharacterDetails" component={CharacterDetails} />
                 </Stack.Navigator>
             );
         };
@@ -48,82 +49,83 @@ export default class App extends Component<Props> {
         this.locationsStack = () => {
             return (
                 <Stack.Navigator>
-                <Stack.Screen name="Locations" component={LocationList} />
+                    <Stack.Screen name="Locations" component={LocationList} />
+                    <Stack.Screen name="LocationDetails" component={LocationDetails} />
                 </Stack.Navigator>
                 );
-            };
-                
-            this.episodesStack = () => {
-                return (
-                    <Stack.Navigator>
-                    <Stack.Screen name="Episodes" component={EpisodeList} />
-                    </Stack.Navigator>
-                );
-            };
-            
-            this.mainTab = () => {
-                
-                function tabBarOnPress(tabName) {
-                    return () => {
-                        AsyncStorage.setItem('lastSelectedTab', tabName);
-                    };
-                };
-                
-                return (
-                    <Tab.Navigator
-                        initialRouteName={initialTab}
-                        backBehavior="none"
-                        tabBarOptions={{
-                            activeTintColor: '#00afc7',
-                        }}
-                    >
-                        <Tab.Screen
-                            name="characters"
-                            component={this.caractersStack}
-                            listeners={{ tabPress: tabBarOnPress("characters") }}
-                            options={{
-                                tabBarLabel: 'Characters',
-                                tabBarIcon: () => (
-                                    <Image source={require('./src/assets/characters.png')} />
-                                ),
-                            }}
-                        />
-                        <Tab.Screen
-                            name="locations"
-                            component={this.locationsStack}
-                            listeners={{ tabPress: tabBarOnPress("locations") }}
-                            options={{
-                                tabBarLabel: 'Locations',
-                                tabBarIcon: () => (
-                                    <Image source={require('./src/assets/locations.png')} />
-                                ),
-                            }}
-                        />
-                        <Tab.Screen
-                            name="episodes"
-                            component={this.episodesStack}
-                            listeners={{ tabPress: tabBarOnPress("episodes") }}
-                            options={{
-                                tabBarLabel: 'Episodes',
-                                tabBarIcon: () => (
-                                    <Image source={require('./src/assets/episodes.png')} />
-                                ),
-                            }}
-                        />
-                    </Tab.Navigator>
-                );
-            }
-            
-            this.navigationContainer = () => {
-                return (<NavigationContainer><this.mainTab /></NavigationContainer>);
-            };
-            
-            this.setState({
-                ready: true,
-            });
-        }
+        };
         
-        render() {
-            return (this.state.ready ? <this.navigationContainer /> : <View />);
+        this.episodesStack = () => {
+            return (
+                <Stack.Navigator>
+                    <Stack.Screen name="Episodes" component={EpisodeList} />
+                </Stack.Navigator>
+            );
+        };
+        
+        this.mainTab = () => {
+            
+            function tabBarOnPress(tabName) {
+                return () => {
+                    AsyncStorage.setItem('lastSelectedTab', tabName);
+                };
+            };
+                
+            return (
+                <Tab.Navigator
+                    initialRouteName={initialTab}
+                    backBehavior="none"
+                    tabBarOptions={{
+                        activeTintColor: '#00afc7',
+                    }}
+                >
+                    <Tab.Screen
+                        name="characters"
+                        component={this.charactersStack}
+                        listeners={{ tabPress: tabBarOnPress("characters") }}
+                        options={{
+                            tabBarLabel: 'Characters',
+                            tabBarIcon: () => (
+                                <Image source={require('./src/assets/characters.png')} />
+                            ),
+                        }}
+                    />
+                    <Tab.Screen
+                        name="locations"
+                        component={this.locationsStack}
+                        listeners={{ tabPress: tabBarOnPress("locations") }}
+                        options={{
+                            tabBarLabel: 'Locations',
+                            tabBarIcon: () => (
+                                <Image source={require('./src/assets/locations.png')} />
+                            ),
+                        }}
+                    />
+                    <Tab.Screen
+                        name="episodes"
+                        component={this.episodesStack}
+                        listeners={{ tabPress: tabBarOnPress("episodes") }}
+                        options={{
+                            tabBarLabel: 'Episodes',
+                            tabBarIcon: () => (
+                                <Image source={require('./src/assets/episodes.png')} />
+                            ),
+                        }}
+                    />
+                </Tab.Navigator>
+            );
         }
+            
+        this.navigationContainer = () => {
+            return (<NavigationContainer><this.mainTab /></NavigationContainer>);
+        };
+                
+        this.setState({
+            ready: true,
+        });
+    }
+        
+    render() {
+        return (this.state.ready ? <this.navigationContainer /> : <View />);
+    }
 }
