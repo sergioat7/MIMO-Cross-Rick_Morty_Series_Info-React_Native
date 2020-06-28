@@ -135,21 +135,11 @@ export default class CharacterDetails extends Component {
                     <Text style={styles.infoTitle}>{species} / {character.gender}</Text>
                     <View style={styles.infoTitle}>
                         <Text>Origin: </Text>
-                        <Text
-                            style={styles.infoLink}
-                            onPress={this.onLocationPressed.bind(this, character.origin.url)}
-                        >
-                            {character.origin.name}
-                        </Text>
+                        {this.getLocation(character.origin)}
                     </View>
                     <View style={styles.infoTitle}>
                         <Text>Currently on:</Text>
-                        <Text
-                            style={styles.infoLink}
-                            onPress={this.onLocationPressed.bind(this, character.location.url)}
-                        >
-                            {character.location.name}
-                        </Text>
+                        {this.getLocation(character.location)}
                     </View>
                 </View>
             </View>
@@ -180,12 +170,38 @@ export default class CharacterDetails extends Component {
         );
     }
 
-    onLocationPressed(locationUrl) {
-        console.log(locationUrl)
+    getLocation(location) {
+
+        if (location.url != "") {
+            return (
+                <Text
+                    style={styles.infoLink}
+                    onPress={this.onLocationPressed.bind(this, location.url)}
+                >
+                    {location.name}
+                </Text>
+            );
+        } else {
+            return (
+                <Text>
+                    {location.name}
+                </Text>
+            );
+        }
     }
 
-    onEpisodePressed(episode) {
-        console.log(episode)
+    onLocationPressed(locationUrl) {
+
+        var locationId = locationUrl.split("/").pop()
+        console.log(locationId)
+        //TODO show location detail
+    }
+
+    onEpisodePressed(episodeUrl) {
+
+        var episodeId = episodeUrl.split("/").pop()
+        console.log(episodeId)
+        //TODO show episode detail
     }
 }
 
