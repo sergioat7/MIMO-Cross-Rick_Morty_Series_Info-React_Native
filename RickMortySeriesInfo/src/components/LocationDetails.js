@@ -4,6 +4,7 @@ import {
     Animated,
     StyleSheet,
     ActivityIndicator,
+    Text,
 } from 'react-native';
 import RickAndMortyApiClient from '../api/RickAndMortyApiClient'
 
@@ -67,8 +68,50 @@ export default class LocationDetails extends Component {
                 )}
                 scrollEventThrottle={16}
             >
+                {this.renderHeader(location)}
+                {this.renderCharacters(location)}
             </Animated.ScrollView>
           );
+    }
+
+    renderHeader(location) {
+        
+        return (
+            <View style={styles.infoContainer}>
+                <Text>Type: {location.type}</Text>
+                <Text>Dimension: {location.dimension}</Text>
+            </View>
+        );
+    }
+  
+    renderCharacters(location) {
+
+        if (location.residents == null) {
+            return [];
+        }
+
+        return (
+            <View style={[styles.item, styles.charactersContainer]}>
+                <Text style={styles.characterTitle}>Residents:</Text>
+                {location.residents.map( resident => {
+                    return (
+                        <Text
+                            style={styles.character}
+                            key={resident}
+                            onPress={this.onCharacterPressed.bind(this, resident)}
+                        >
+                            - {resident}
+                        </Text>
+                    )}
+                )}
+            </View>
+        );
+    }
+
+    onCharacterPressed(characterUrl) {
+
+        var characterId = characterUrl.split("/").pop()
+        this.props.navigation.navigate('CharacterDetails', { characterId: characterId });
     }
 }
 
@@ -84,5 +127,25 @@ const styles = StyleSheet.create({
         padding: 10,
         justifyContent: 'flex-start',
         alignItems: 'stretch',
+    },
+    infoContainer: {
+        flex: 1,
+        marginLeft: 10,
+        justifyContent: 'center',
+    },
+    charactersContainer: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        marginTop: 20,
+    },
+    characterTitle: {
+        fontWeight: 'bold',
+        fontSize: 17,
+    },
+    character: {
+        paddingHorizontal: 2,
+        marginHorizontal: 2,
+        marginVertical: 5,
+        color: 'blue'
     },
 });
