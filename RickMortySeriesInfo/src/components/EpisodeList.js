@@ -1,8 +1,12 @@
 import React, { Component } from 'react';
 import {
-    View
+    View,
+    StyleSheet,
+    ActivityIndicator,
+    FlatList,
 } from 'react-native';
 import RickAndMortyApiClient from '../api/RickAndMortyApiClient'
+import EpisodeRow from '../views/EpisodeRow'
 
 export default class EpisodeList extends Component {
     
@@ -62,7 +66,42 @@ export default class EpisodeList extends Component {
     render() {
 
         return (
-            <View />
+            <View style={styles.container}>
+                {/* <ActivityIndicator size="large" color="#0000ff" animating={this.isLoading} /> */}
+                <FlatList 
+                    data={this.state.episodes}
+                    renderItem={ this.renderRow.bind(this) }
+                    onEndReached={() => {
+                        this.loadNextPage();
+                    }}
+                />
+            </View>
         );
     }
+        
+    renderRow(rowInfo) {
+        
+        var episode = rowInfo.item.episode;
+        return (
+            <EpisodeRow
+                episode={episode}
+                onPress={this.onEpisodePressed.bind(this, episode)}
+            />
+        );
+    }
+    
+    onEpisodePressed(episode) {
+        //TODO go to episode detail
+        console.log(episode.id)
+    }
 }
+
+const styles = StyleSheet.create({
+    
+    container: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'stretch',
+        backgroundColor: '#f5fcff',
+    },
+});
