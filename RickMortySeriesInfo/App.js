@@ -34,6 +34,13 @@ export default class App extends Component<Props> {
             this.createMainNavigation(lastSelectedTab);
         });
     }
+
+    getScreens() {
+        return [
+            <Stack.Screen key="CharacterDetails" name="CharacterDetails" component={CharacterDetails} />,
+            <Stack.Screen key="LocationDetails" name="LocationDetails" component={LocationDetails} />
+        ];
+    }
     
     createMainNavigation(initialTab) {
         
@@ -41,7 +48,7 @@ export default class App extends Component<Props> {
             return (
                 <Stack.Navigator>
                     <Stack.Screen name="Characters" component={CharacterList} />
-                    <Stack.Screen name="CharacterDetails" component={CharacterDetails} />
+                    {this.getScreens()}
                 </Stack.Navigator>
             );
         };
@@ -50,7 +57,7 @@ export default class App extends Component<Props> {
             return (
                 <Stack.Navigator>
                     <Stack.Screen name="Locations" component={LocationList} />
-                    <Stack.Screen name="LocationDetails" component={LocationDetails} />
+                    {this.getScreens()}
                 </Stack.Navigator>
                 );
         };
