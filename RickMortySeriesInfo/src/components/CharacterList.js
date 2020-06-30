@@ -51,11 +51,11 @@ export default class CharacterList extends Component {
                         key: character.id.toString(),
                         character: character
                     }
-                })
+                });
                 this.setState({
                     ...this.state,
                     characters: this.nextPage == 1 ? characters : this.state.characters.concat(characters),
-                })
+                });
                 this.nextPage++;
                 this.numberOfPages = numberOfPages;
             })
@@ -65,14 +65,14 @@ export default class CharacterList extends Component {
                     ...this.state,
                     isLoading: false,
                     isRefreshing: false,
-                })
+                });
             })
             .finally( () => {
                 this.setState({
                     ...this.state,
                     isLoading: false,
                     isRefreshing: false,
-                })
+                });
             });
     }
     
@@ -97,7 +97,7 @@ export default class CharacterList extends Component {
                           refreshing={this.state.isRefreshing}
                           onRefresh={this.onPullToRefresh.bind(this)}
                         />
-                      }
+                    }
                 />
             </View>
         );
