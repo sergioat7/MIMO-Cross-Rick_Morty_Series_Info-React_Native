@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import {
     View,
-    StyleSheet,
-    ActivityIndicator,
     FlatList,
+    ActivityIndicator,
+    StyleSheet,
+    RefreshControl,
 } from 'react-native';
 import RickAndMortyApiClient from '../api/RickAndMortyApiClient'
 import LocationRow from '../views/LocationRow'
@@ -13,11 +14,14 @@ export default class LocationList extends Component {
     constructor(props) {
         super(props);
         
-        this.state = { locations: [] };
+        this.state = {
+            locations: [],
+            isLoading: false,
+            isRefreshing: false,
+        };
         this.apiClient = new RickAndMortyApiClient();
         this.nextPage = 1;
         this.numberOfPages = 1;
-        this.isLoading = false;
     }
     
     componentDidMount() {
@@ -30,12 +34,15 @@ export default class LocationList extends Component {
             return;
         }
         
-        if (this.isLoading) {
+        if (this.state.isLoading) {
             return;
         }
         
-        this.isLoading = true;
-        
+        this.setState({
+            ...this.state,
+            isLoading: true,
+        })
+                
         this.loadPage(this.nextPage)
             .then( ({resultLocations, numberOfPages}) => {
             
@@ -44,18 +51,28 @@ export default class LocationList extends Component {
                         key: location.id.toString(),
                         location: location
                     }
-                })
+                });
                 this.setState({
-                    locations: this.state.locations.concat(locations)
+                    ...this.state,
+                    locations: this.nextPage == 1 ? locations : this.state.locations.concat(locations),
                 });
                 this.nextPage++;
                 this.numberOfPages = numberOfPages;
             })
             .catch( error => {
                 console.error(error);
+                this.setState({
+                    ...this.state,
+                    isLoading: false,
+                    isRefreshing: false,
+                });
             })
             .finally( () => {
-                this.isLoading = false;
+                this.setState({
+                    ...this.state,
+                    isLoading: false,
+                    isRefreshing: false,
+                });
             });
     }
     
@@ -67,13 +84,20 @@ export default class LocationList extends Component {
 
         return (
             <View style={styles.container}>
-                {/* <ActivityIndicator size="large" color="#0000ff" animating={this.isLoading} /> */}
                 <FlatList 
                     data={this.state.locations}
+                    ListFooterComponent={this.renderFooter.bind(this)}
                     renderItem={ this.renderRow.bind(this) }
+                    keyExtractor={(item, index) => index.toString()}
                     onEndReached={() => {
                         this.loadNextPage();
                     }}
+                    refreshControl={
+                        <RefreshControl
+                          refreshing={this.state.isRefreshing}
+                          onRefresh={this.onPullToRefresh.bind(this)}
+                        />
+                    }
                 />
             </View>
         );
@@ -88,6 +112,20 @@ export default class LocationList extends Component {
                 onPress={this.onLocationPressed.bind(this, location)}
             />
         );
+    }
+
+    renderFooter() {
+        return (this.state.isLoading ? <ActivityIndicator size="large" color="#0000ff"/> : null);
+    }
+
+    onPullToRefresh() {
+
+        this.setState({
+            ...this.state,
+            isRefreshing: true,
+        })
+        this.nextPage = 1;
+        this.loadNextPage();
     }
     
     onLocationPressed(location) {
