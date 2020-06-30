@@ -16,12 +16,12 @@ export default class CharacterList extends Component {
         
         this.state = {
             characters: [],
+            isLoading: false,
             isRefreshing: false,
         };
         this.apiClient = new RickAndMortyApiClient();
         this.nextPage = 1;
         this.numberOfPages = 1;
-        this.isLoading = false;
     }
     
     componentDidMount() {
@@ -34,11 +34,14 @@ export default class CharacterList extends Component {
             return;
         }
         
-        if (this.isLoading) {
+        if (this.state.isLoading) {
             return;
         }
         
-        this.isLoading = true;
+        this.setState({
+            ...this.state,
+            isLoading: true,
+        })
         
         this.loadPage(this.nextPage)
             .then( ({resultCharacters, numberOfPages}) => {
@@ -60,13 +63,14 @@ export default class CharacterList extends Component {
                 console.error(error);
                 this.setState({
                     ...this.state,
+                    isLoading: false,
                     isRefreshing: false,
                 })
             })
             .finally( () => {
-                this.isLoading = false;
                 this.setState({
                     ...this.state,
+                    isLoading: false,
                     isRefreshing: false,
                 })
             });
@@ -80,9 +84,9 @@ export default class CharacterList extends Component {
 
         return (
             <View style={styles.container}>
-                {/* <ActivityIndicator size="large" color="#0000ff" animating={this.isLoading} /> */}
-                <FlatList 
+                <FlatList
                     data={this.state.characters}
+                    ListFooterComponent={this.renderFooter.bind(this)}
                     renderItem={ this.renderRow.bind(this) }
                     keyExtractor={(item, index) => index.toString()}
                     onEndReached={() => {
@@ -109,6 +113,10 @@ export default class CharacterList extends Component {
                 onPress={this.onCharacterPressed.bind(this, character)}
             />
         );
+    }
+
+    renderFooter() {
+        return (this.state.isLoading ? <ActivityIndicator size="large" color="#0000ff"/> : null);
     }
 
     onPullToRefresh() {
