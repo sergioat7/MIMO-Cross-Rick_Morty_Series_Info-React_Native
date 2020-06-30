@@ -3,7 +3,8 @@ import {
     View,
     FlatList,
     ActivityIndicator,
-    StyleSheet
+    StyleSheet,
+    RefreshControl,
 } from 'react-native';
 import RickAndMortyApiClient from '../api/RickAndMortyApiClient'
 import CharacterRow from '../views/CharacterRow'
@@ -13,7 +14,10 @@ export default class CharacterList extends Component {
     constructor(props) {
         super(props);
         
-        this.state = { characters: [] };
+        this.state = {
+            characters: [],
+            isRefreshing: false,
+        };
         this.apiClient = new RickAndMortyApiClient();
         this.nextPage = 1;
         this.numberOfPages = 1;
@@ -46,16 +50,25 @@ export default class CharacterList extends Component {
                     }
                 })
                 this.setState({
-                    characters: this.state.characters.concat(characters)
-                });
+                    ...this.state,
+                    characters: this.nextPage == 1 ? characters : this.state.characters.concat(characters),
+                })
                 this.nextPage++;
                 this.numberOfPages = numberOfPages;
             })
             .catch( error => {
                 console.error(error);
+                this.setState({
+                    ...this.state,
+                    isRefreshing: false,
+                })
             })
             .finally( () => {
                 this.isLoading = false;
+                this.setState({
+                    ...this.state,
+                    isRefreshing: false,
+                })
             });
     }
     
@@ -71,14 +84,21 @@ export default class CharacterList extends Component {
                 <FlatList 
                     data={this.state.characters}
                     renderItem={ this.renderRow.bind(this) }
+                    keyExtractor={(item, index) => index.toString()}
                     onEndReached={() => {
                         this.loadNextPage();
                     }}
+                    refreshControl={
+                        <RefreshControl
+                          refreshing={this.state.isRefreshing}
+                          onRefresh={this.onPullToRefresh.bind(this)}
+                        />
+                      }
                 />
             </View>
         );
     }
-        
+
     renderRow(rowInfo) {
         
         var character = rowInfo.item.character;
@@ -89,6 +109,16 @@ export default class CharacterList extends Component {
                 onPress={this.onCharacterPressed.bind(this, character)}
             />
         );
+    }
+
+    onPullToRefresh() {
+
+        this.setState({
+            ...this.state,
+            isRefreshing: true,
+        })
+        this.nextPage = 1;
+        this.loadNextPage();
     }
     
     onCharacterPressed(character) {
