@@ -3,7 +3,8 @@ import {
     View,
     FlatList,
     ActivityIndicator,
-    StyleSheet
+    StyleSheet,
+    RefreshControl,
 } from 'react-native';
 import RickAndMortyApiClient from '../api/RickAndMortyApiClient'
 import CharacterRow from '../views/CharacterRow'
@@ -13,11 +14,14 @@ export default class CharacterList extends Component {
     constructor(props) {
         super(props);
         
-        this.state = { characters: [] };
+        this.state = {
+            characters: [],
+            isLoading: false,
+            isRefreshing: false,
+        };
         this.apiClient = new RickAndMortyApiClient();
         this.nextPage = 1;
         this.numberOfPages = 1;
-        this.isLoading = false;
     }
     
     componentDidMount() {
@@ -30,11 +34,14 @@ export default class CharacterList extends Component {
             return;
         }
         
-        if (this.isLoading) {
+        if (this.state.isLoading) {
             return;
         }
         
-        this.isLoading = true;
+        this.setState({
+            ...this.state,
+            isLoading: true,
+        })
         
         this.loadPage(this.nextPage)
             .then( ({resultCharacters, numberOfPages}) => {
@@ -44,18 +51,28 @@ export default class CharacterList extends Component {
                         key: character.id.toString(),
                         character: character
                     }
-                })
+                });
                 this.setState({
-                    characters: this.state.characters.concat(characters)
+                    ...this.state,
+                    characters: this.nextPage == 1 ? characters : this.state.characters.concat(characters),
                 });
                 this.nextPage++;
                 this.numberOfPages = numberOfPages;
             })
             .catch( error => {
                 console.error(error);
+                this.setState({
+                    ...this.state,
+                    isLoading: false,
+                    isRefreshing: false,
+                });
             })
             .finally( () => {
-                this.isLoading = false;
+                this.setState({
+                    ...this.state,
+                    isLoading: false,
+                    isRefreshing: false,
+                });
             });
     }
     
@@ -67,18 +84,25 @@ export default class CharacterList extends Component {
 
         return (
             <View style={styles.container}>
-                {/* <ActivityIndicator size="large" color="#0000ff" animating={this.isLoading} /> */}
-                <FlatList 
+                <FlatList
                     data={this.state.characters}
+                    ListFooterComponent={this.renderFooter.bind(this)}
                     renderItem={ this.renderRow.bind(this) }
+                    keyExtractor={(item, index) => index.toString()}
                     onEndReached={() => {
                         this.loadNextPage();
                     }}
+                    refreshControl={
+                        <RefreshControl
+                          refreshing={this.state.isRefreshing}
+                          onRefresh={this.onPullToRefresh.bind(this)}
+                        />
+                    }
                 />
             </View>
         );
     }
-        
+
     renderRow(rowInfo) {
         
         var character = rowInfo.item.character;
@@ -89,6 +113,20 @@ export default class CharacterList extends Component {
                 onPress={this.onCharacterPressed.bind(this, character)}
             />
         );
+    }
+
+    renderFooter() {
+        return (this.state.isLoading ? <ActivityIndicator size="large" color="#0000ff"/> : null);
+    }
+
+    onPullToRefresh() {
+
+        this.setState({
+            ...this.state,
+            isRefreshing: true,
+        })
+        this.nextPage = 1;
+        this.loadNextPage();
     }
     
     onCharacterPressed(character) {

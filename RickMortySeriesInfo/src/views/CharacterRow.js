@@ -31,7 +31,7 @@ export default class CharacterRow extends Component {
                         source={{ uri: character.image }}
                     />
                     <View style={styles.titleContainer}>
-                        <Text>{character.name}</Text>
+                        <Text style={{fontWeight: 'bold'}}>{character.name}</Text>
                         <Text>{character.species}</Text>
                     </View>
                     {this.getStatusElement()}

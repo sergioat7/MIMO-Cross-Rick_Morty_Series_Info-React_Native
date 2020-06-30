@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import {
     View,
-    StyleSheet,
-    ActivityIndicator,
     FlatList,
+    ActivityIndicator,
+    StyleSheet,
+    RefreshControl,
 } from 'react-native';
 import RickAndMortyApiClient from '../api/RickAndMortyApiClient'
 import EpisodeRow from '../views/EpisodeRow'
@@ -13,11 +14,14 @@ export default class EpisodeList extends Component {
     constructor(props) {
         super(props);
         
-        this.state = { episodes: [] };
+        this.state = {
+            episodes: [],
+            isLoading: false,
+            isRefreshing: false,
+        };
         this.apiClient = new RickAndMortyApiClient();
         this.nextPage = 1;
         this.numberOfPages = 1;
-        this.isLoading = false;
     }
     
     componentDidMount() {
@@ -30,11 +34,14 @@ export default class EpisodeList extends Component {
             return;
         }
         
-        if (this.isLoading) {
+        if (this.state.isLoading) {
             return;
         }
         
-        this.isLoading = true;
+        this.setState({
+            ...this.state,
+            isLoading: true,
+        })
         
         this.loadPage(this.nextPage)
             .then( ({resultEpisodes, numberOfPages}) => {
@@ -44,18 +51,28 @@ export default class EpisodeList extends Component {
                         key: episode.id.toString(),
                         episode: episode
                     }
-                })
+                });
                 this.setState({
-                    episodes: this.state.episodes.concat(episodes)
+                    ...this.state,
+                    episodes: this.nextPage == 1 ? episodes : this.state.episodes.concat(episodes),
                 });
                 this.nextPage++;
                 this.numberOfPages = numberOfPages;
             })
             .catch( error => {
                 console.error(error);
+                this.setState({
+                    ...this.state,
+                    isLoading: false,
+                    isRefreshing: false,
+                });
             })
             .finally( () => {
-                this.isLoading = false;
+                this.setState({
+                    ...this.state,
+                    isLoading: false,
+                    isRefreshing: false,
+                });
             });
     }
     
@@ -67,13 +84,20 @@ export default class EpisodeList extends Component {
 
         return (
             <View style={styles.container}>
-                {/* <ActivityIndicator size="large" color="#0000ff" animating={this.isLoading} /> */}
                 <FlatList 
                     data={this.state.episodes}
+                    ListFooterComponent={this.renderFooter.bind(this)}
                     renderItem={ this.renderRow.bind(this) }
+                    keyExtractor={(item, index) => index.toString()}
                     onEndReached={() => {
                         this.loadNextPage();
                     }}
+                    refreshControl={
+                        <RefreshControl
+                          refreshing={this.state.isRefreshing}
+                          onRefresh={this.onPullToRefresh.bind(this)}
+                        />
+                    }
                 />
             </View>
         );
@@ -88,6 +112,20 @@ export default class EpisodeList extends Component {
                 onPress={this.onEpisodePressed.bind(this, episode)}
             />
         );
+    }
+
+    renderFooter() {
+        return (this.state.isLoading ? <ActivityIndicator size="large" color="#0000ff"/> : null);
+    }
+
+    onPullToRefresh() {
+
+        this.setState({
+            ...this.state,
+            isRefreshing: true,
+        })
+        this.nextPage = 1;
+        this.loadNextPage();
     }
     
     onEpisodePressed(episode) {
