@@ -5,6 +5,8 @@ import {
     StyleSheet,
     ActivityIndicator,
     Text,
+    TouchableHighlight,
+    Image,
 } from 'react-native';
 import RickAndMortyApiClient from '../api/RickAndMortyApiClient'
 
@@ -18,9 +20,11 @@ export default class EpisodeDetails extends Component {
         this.episodeId = params.episodeId;
         this.state = {
             episode: null,
+            characters: null,
         };
         this.apiClient = new RickAndMortyApiClient();
         this.isLoading = true;
+        this.isLoadingCharacters = true;
     
         props.navigation.setOptions({
           title: "",
@@ -37,6 +41,7 @@ export default class EpisodeDetails extends Component {
                     ...this.state,
                     episode: episode,
                 })
+                this.getCharacters(episode.characters)
                 this.props.navigation.setOptions({
                     title: episode.name,
                 });
@@ -44,6 +49,28 @@ export default class EpisodeDetails extends Component {
             .catch( error => {
                 console.error(error)
                 this.isLoading = false;
+            })
+    }
+
+    getCharacters(residents) {
+
+        var ids = []
+        for (i in residents) {
+            var id = residents[i].split("/").pop()
+            ids.push(id)
+        }
+
+        this.apiClient.getCharacter(ids)
+            .then( characters => {
+                
+                this.isLoadingCharacters = false;
+                this.setState({
+                    ...this.state,
+                    characters: characters,
+                })
+            })
+            .catch( error => {
+                console.error(error)
             })
     }
     
@@ -74,6 +101,7 @@ export default class EpisodeDetails extends Component {
                 scrollEventThrottle={16}
             >
                 {this.renderHeader(episode)}
+                {this.renderCharacters()}
             </Animated.ScrollView>
           );
     }
@@ -91,6 +119,56 @@ export default class EpisodeDetails extends Component {
             </View>
         );
     }
+  
+    renderCharacters() {
+        
+        if (this.isLoadingCharacters) {
+            return (
+                <View style={[styles.item, styles.charactersContainer]}>
+                    <Text style={styles.characterTitle}>Residents:</Text>
+                    <ActivityIndicator style={styles.loading} size="large"/>
+                </View>
+            );
+        }
+
+        characters = this.state.characters;
+
+        if (characters == null) {
+            return (
+                <View/>
+            );
+        }
+
+        return (
+            <View style={styles.charactersContainer}>
+                <Text style={styles.characterTitle}>Residents:</Text>
+                {characters.map( character => {
+                    return (
+                        <TouchableHighlight
+                            onPress={this.onCharacterPressed.bind(this, character.id)}
+                            underlayColor='lightgray'
+                            key={character.id}
+                        >
+                            <View style={styles.character}>
+                                <Image
+                                    style={styles.image}
+                                    resizeMode="contain"
+                                    source={{ uri: character.image }}
+                                />
+                                <View style={styles.characterName}>
+                                    <Text style={{color:'blue'}}>{character.name}</Text>
+                                </View>
+                            </View>
+                        </TouchableHighlight>
+                    )
+                })}
+            </View>
+        );
+    }
+
+    onCharacterPressed(characterId) {
+        this.props.navigation.navigate('CharacterDetails', { characterId: characterId });
+    }
 }
 
 const styles = StyleSheet.create({
@@ -107,6 +185,28 @@ const styles = StyleSheet.create({
         alignItems: 'stretch',
     },
     infoContainer: {
+        flex: 1,
+        marginLeft: 10,
+        justifyContent: 'center',
+    },
+    charactersContainer: {
+        flexDirection: 'column',
+        marginTop: 20,
+    },
+    characterTitle: {
+        fontWeight: 'bold',
+        fontSize: 17,
+    },
+    character: {
+        flex: 1,
+        flexDirection: 'row',
+        padding: 10,
+    },
+    image: {
+        width: 25,
+        height: 25,
+    },
+    characterName: {
         flex: 1,
         marginLeft: 10,
         justifyContent: 'center',
