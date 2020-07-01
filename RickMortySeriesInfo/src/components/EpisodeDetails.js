@@ -4,6 +4,7 @@ import {
     Animated,
     StyleSheet,
     ActivityIndicator,
+    Text,
 } from 'react-native';
 import RickAndMortyApiClient from '../api/RickAndMortyApiClient'
 
@@ -56,7 +57,7 @@ export default class EpisodeDetails extends Component {
             );
         }
 
-        location = this.state.location;
+        episode = this.state.episode;
 
         return (
             <Animated.ScrollView 
@@ -72,8 +73,23 @@ export default class EpisodeDetails extends Component {
                 )}
                 scrollEventThrottle={16}
             >
+                {this.renderHeader(episode)}
             </Animated.ScrollView>
           );
+    }
+
+    renderHeader(episode) {
+
+        var characaters = episode.episode.split('')
+        var seasonNumber = characaters[1] + characaters[2]
+        var episodeNumber = characaters[4] + characaters[5]
+        
+        return (
+            <View style={styles.infoContainer}>
+                <Text>Release date: {episode.air_date}</Text>
+                <Text>Episode: {seasonNumber}x{episodeNumber}</Text>
+            </View>
+        );
     }
 }
 
@@ -89,5 +105,10 @@ const styles = StyleSheet.create({
         padding: 10,
         justifyContent: 'flex-start',
         alignItems: 'stretch',
+    },
+    infoContainer: {
+        flex: 1,
+        marginLeft: 10,
+        justifyContent: 'center',
     },
 });
