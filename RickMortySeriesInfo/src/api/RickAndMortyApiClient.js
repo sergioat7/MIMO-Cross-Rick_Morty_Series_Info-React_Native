@@ -54,4 +54,11 @@ export default class RickAndMortyApiClient {
                     numberOfPages: responseJSON.info.pages
                 }) );
     }
+
+    getEpisode(episodeId) {
+        
+        let url = `${RickAndMortyApiClient.BASE_URL}/episode/${episodeId}`;
+        return fetch(url)
+                .then( response => response.json() );
+    }
 }

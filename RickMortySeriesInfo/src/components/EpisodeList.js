@@ -109,7 +109,7 @@ export default class EpisodeList extends Component {
         return (
             <EpisodeRow
                 episode={episode}
-                onPress={this.onEpisodePressed.bind(this, episode)}
+                onPress={this.onEpisodePressed.bind(this, episode.id)}
             />
         );
     }
@@ -128,9 +128,8 @@ export default class EpisodeList extends Component {
         this.loadNextPage();
     }
     
-    onEpisodePressed(episode) {
-        //TODO go to episode detail
-        console.log(episode.id)
+    onEpisodePressed(episodeId) {
+        this.props.navigation.navigate('EpisodeDetails', { episodeId: episodeId });
     }
 }
 
