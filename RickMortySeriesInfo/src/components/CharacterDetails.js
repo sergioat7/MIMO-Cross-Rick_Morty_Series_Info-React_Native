@@ -200,7 +200,7 @@ export default class CharacterDetails extends Component {
     onEpisodePressed(episodeUrl) {
 
         var episodeId = episodeUrl.split("/").pop()
-        //TODO show episode detail
+        this.props.navigation.navigate('EpisodeDetails', { episodeId: episodeId });
     }
 }
 

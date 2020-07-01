@@ -13,6 +13,7 @@ import LocationList from './src/components/LocationList'
 import EpisodeList from './src/components/EpisodeList'
 import CharacterDetails from './src/components/CharacterDetails'
 import LocationDetails from './src/components/LocationDetails'
+import EpisodeDetails from './src/components/EpisodeDetails'
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -38,7 +39,8 @@ export default class App extends Component<Props> {
     getScreens() {
         return [
             <Stack.Screen key="CharacterDetails" name="CharacterDetails" component={CharacterDetails} />,
-            <Stack.Screen key="LocationDetails" name="LocationDetails" component={LocationDetails} />
+            <Stack.Screen key="LocationDetails" name="LocationDetails" component={LocationDetails} />,
+            <Stack.Screen key="EpisodeDetails" name="EpisodeDetails" component={EpisodeDetails} />,
         ];
     }
     
@@ -66,6 +68,7 @@ export default class App extends Component<Props> {
             return (
                 <Stack.Navigator>
                     <Stack.Screen name="Episodes" component={EpisodeList} />
+                    {this.getScreens()}
                 </Stack.Navigator>
             );
         };
