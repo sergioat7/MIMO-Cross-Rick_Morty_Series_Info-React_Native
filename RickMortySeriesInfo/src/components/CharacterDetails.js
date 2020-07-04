@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import RickAndMortyApiClient from '../api/RickAndMortyApiClient'
 import Icon from 'react-native-vector-icons/AntDesign';
+import AsyncStorage from '@react-native-community/async-storage';
 
 export default class CharacterDetails extends Component {
     
@@ -19,6 +20,7 @@ export default class CharacterDetails extends Component {
         this.posterScale = new Animated.Value(0.5);
         this.scrollValue = new Animated.Value(0);
         this.characterId = params.characterId;
+        this.key = 'character' + params.characterId;
         this.state = {
             character: null,
             initialAnimation: true,
@@ -43,17 +45,24 @@ export default class CharacterDetails extends Component {
   
     componentDidMount() {
 
-        this.apiClient.getCharacter([this.characterId])
-            .then( characters => {
-                this.isLoading = false;
-                this.setState({ character: characters[0] });
-                this.props.navigation.setOptions({
-                    title: characters[0].name,
+        this.apiClient.getCharacter([this.characterId]).then( characters => {
+            this.isLoading = false;
+            this.setState({
+                character: characters[0]
+            });
+            this.props.navigation.setOptions({
+                 title: characters[0].name,
                 });
-            })
-            .catch( error => {
-                console.error(error)
-            })
+        })
+        .catch( error => {
+            console.error(error)
+        })
+
+        AsyncStorage.getItem(this.key).then( isFavourite => {
+            this.setState({
+                isFavourite: isFavourite == 'true'
+            });
+        });
     
         Animated.sequence([
             Animated.parallel([
@@ -232,11 +241,12 @@ export default class CharacterDetails extends Component {
 
     onFavouriteButtonPressed() {
 
-        var isFavourite = this.state.isFavourite
-        this.setState({
-            ...this.state,
-            isFavourite: !isFavourite,
-        })
+        var value = (!this.state.isFavourite).toString();
+        AsyncStorage.setItem(this.key, value).then( () => {
+            this.setState({
+                isFavourite: !this.state.isFavourite
+            });
+        });
     }
 }
 
