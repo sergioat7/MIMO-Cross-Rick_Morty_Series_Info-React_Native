@@ -7,6 +7,7 @@ import {
     ActivityIndicator,
 } from 'react-native';
 import RickAndMortyApiClient from '../api/RickAndMortyApiClient'
+import Icon from 'react-native-vector-icons/AntDesign';
 
 export default class CharacterDetails extends Component {
     
@@ -21,12 +22,22 @@ export default class CharacterDetails extends Component {
         this.state = {
             character: null,
             initialAnimation: true,
+            isFavourite: false,
         };
         this.apiClient = new RickAndMortyApiClient();
-        this.isLoading = true;
-    
-        props.navigation.setOptions({
-          title: "",
+        this.isLoading = true
+        this.props.navigation.setOptions({
+            title: '',
+            headerTintColor: '#000000',
+        });
+    }
+
+    componentDidUpdate() {
+
+        this.props.navigation.setOptions({
+            headerRight: () => (
+                this.renderRightHeader()
+            ),
         });
     }
   
@@ -76,6 +87,19 @@ export default class CharacterDetails extends Component {
             })
         });
     }
+
+    renderRightHeader() {
+
+        var iconName = this.state.isFavourite ? 'heart' : 'hearto';
+        return (
+            <Icon
+                name={iconName}
+                size={25}
+                style={styles.favouriteHeaderButton}
+                onPress={this.onFavouriteButtonPressed.bind(this)}
+            />
+        );
+    }
     
     render() {
         
@@ -119,21 +143,24 @@ export default class CharacterDetails extends Component {
         return (
             <View style={styles.headerContainer}>
                 <Animated.Image 
-                style={[styles.image, {
-                    opacity: this.state.initialAnimation ? this.posterAlpha : this.scrollValue.interpolate({
-                        inputRange: [0, 150,],
-                        outputRange: [1.0, 0.0],
-                        extrapolate: 'clamp',
-                    }),
-                    transform: [{
-                        scale: this.posterScale,
-                    }],
-                }]}
-                resizeMode="contain"
-                source={{ uri: character.image }} 
+                    style={[styles.image, {
+                        opacity: this.state.initialAnimation ? this.posterAlpha : this.scrollValue.interpolate({
+                            inputRange: [0, 150,],
+                            outputRange: [1.0, 0.0],
+                            extrapolate: 'clamp',
+                        }),
+                        transform: [{
+                            scale: this.posterScale,
+                        }],
+                    }]}
+                    resizeMode="contain"
+                    source={{ uri: character.image }} 
                 />
                 <View style={styles.infoContainer}>
-                    <Text style={styles.infoTitle}>{species} / {character.gender}</Text>
+                    <View style={styles.infoTitle}>
+                        <Text>Species: </Text>
+                        <Text style={styles.infoTitle}>{species} / {character.gender}</Text>
+                    </View>
                     <View style={styles.infoTitle}>
                         <Text>Origin: </Text>
                         {this.getLocation(character.origin)}
@@ -202,6 +229,15 @@ export default class CharacterDetails extends Component {
         var episodeId = episodeUrl.split("/").pop()
         this.props.navigation.navigate('EpisodeDetails', { episodeId: episodeId });
     }
+
+    onFavouriteButtonPressed() {
+
+        var isFavourite = this.state.isFavourite
+        this.setState({
+            ...this.state,
+            isFavourite: !isFavourite,
+        })
+    }
 }
 
 const styles = StyleSheet.create({
@@ -255,4 +291,8 @@ const styles = StyleSheet.create({
         marginVertical: 5,
         color: 'blue'
     },
+    favouriteHeaderButton: {
+        marginStart: 10,
+        marginEnd: 10,
+    }
 });
