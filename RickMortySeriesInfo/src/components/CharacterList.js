@@ -109,6 +109,7 @@ export default class CharacterList extends Component {
         return (
             <CharacterRow
                 character={character}
+                isFavourite={true}
                 showStatus={false}
                 onPress={this.onCharacterPressed.bind(this, character)}
             />

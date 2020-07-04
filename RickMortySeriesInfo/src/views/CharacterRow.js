@@ -7,6 +7,7 @@ import {
     StyleSheet,
     Button
 } from 'react-native';
+import Icon from 'react-native-vector-icons/AntDesign';
 
 export default class CharacterRow extends Component {
     
@@ -14,6 +15,7 @@ export default class CharacterRow extends Component {
         super(props);
         this.state = {
             character: props.character,
+            isFavourite: props.isFavourite,
             showStatus: props.showStatus,
         };
     }
@@ -31,12 +33,19 @@ export default class CharacterRow extends Component {
                         source={{ uri: character.image }}
                     />
                     <View style={styles.titleContainer}>
+                        {this.getFavouriteImage()}
                         <Text style={{fontWeight: 'bold'}}>{character.name}</Text>
                         <Text>{character.species}</Text>
                     </View>
                     {this.getStatusElement()}
                 </View>
             </TouchableHighlight>
+        );
+    }
+
+    getFavouriteImage() {
+        return (
+            this.state.isFavourite ? <Icon name='heart'/> : null
         );
     }
     
