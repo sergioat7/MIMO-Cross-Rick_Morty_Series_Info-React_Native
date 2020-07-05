@@ -30,6 +30,15 @@ export default class CharacterRow extends Component {
             });
         });
     }
+
+    componentDidUpdate() {
+
+        AsyncStorage.getItem(this.key).then( isFavourite => {
+            this.setState({
+                isFavourite: isFavourite == 'true'
+            });
+        });
+    }
     
     render() {
 
