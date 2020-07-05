@@ -5,6 +5,8 @@ import {
     View,
     StyleSheet,
 } from 'react-native';
+import Icon from 'react-native-vector-icons/AntDesign';
+import AsyncStorage from '@react-native-community/async-storage';
 
 export default class EpisodeRow extends Component {
     
@@ -12,7 +14,27 @@ export default class EpisodeRow extends Component {
         super(props);
         this.state = {
             episode: props.episode,
+            isFavourite: false,
         };
+        this.key = 'episode' + props.episode.id;
+    }
+
+    componentDidMount() {
+
+        AsyncStorage.getItem(this.key).then( isFavourite => {
+            this.setState({
+                isFavourite: isFavourite == 'true'
+            });
+        });
+    }
+
+    componentDidUpdate() {
+
+        AsyncStorage.getItem(this.key).then( isFavourite => {
+            this.setState({
+                isFavourite: isFavourite == 'true'
+            });
+        });
     }
     
     render() {
@@ -31,8 +53,15 @@ export default class EpisodeRow extends Component {
                         <Text style={{fontWeight: 'bold'}}>{episode.name}</Text>
                         <Text>{episode.air_date}</Text>
                     </View>
+                    {this.getFavouriteImage()}
                 </View>
             </TouchableHighlight>
+        );
+    }
+
+    getFavouriteImage() {
+        return (
+            this.state.isFavourite ? <Icon name='heart' style={{alignSelf: 'center'}}/> : null
         );
     }
 }
