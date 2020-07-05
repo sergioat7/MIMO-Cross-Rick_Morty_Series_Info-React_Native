@@ -28,7 +28,7 @@ export default class CharacterDetails extends Component {
         };
         this.apiClient = new RickAndMortyApiClient();
         this.isLoading = true
-        this.props.navigation.setOptions({
+        props.navigation.setOptions({
             title: '',
             headerTintColor: '#000000',
         });
@@ -51,8 +51,8 @@ export default class CharacterDetails extends Component {
                 character: characters[0]
             });
             this.props.navigation.setOptions({
-                 title: characters[0].name,
-                });
+                title: characters[0].name,
+            });
         })
         .catch( error => {
             console.error(error)
@@ -304,5 +304,5 @@ const styles = StyleSheet.create({
     favouriteHeaderButton: {
         marginStart: 10,
         marginEnd: 10,
-    }
+    },
 });
