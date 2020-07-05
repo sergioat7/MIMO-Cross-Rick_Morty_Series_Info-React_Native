@@ -9,6 +9,8 @@ import {
     Image,
 } from 'react-native';
 import RickAndMortyApiClient from '../api/RickAndMortyApiClient'
+import Icon from 'react-native-vector-icons/AntDesign';
+import AsyncStorage from '@react-native-community/async-storage';
 
 export default class EpisodeDetails extends Component {
     
@@ -18,38 +20,54 @@ export default class EpisodeDetails extends Component {
         params = props.route.params;
         this.scrollValue = new Animated.Value(0);
         this.episodeId = params.episodeId;
+        this.key = 'episode' + params.episodeId;
         this.state = {
             episode: null,
             characters: null,
+            isFavourite: false,
         };
         this.apiClient = new RickAndMortyApiClient();
         this.isLoading = true;
         this.isLoadingCharacters = true;
-    
         props.navigation.setOptions({
-          title: "",
+            title: '',
+            headerTintColor: '#000000',
+        });
+    }
+
+    componentDidUpdate() {
+
+        this.props.navigation.setOptions({
+            headerRight: () => (
+                this.renderRightHeader()
+            ),
         });
     }
   
     componentDidMount() {
 
-        this.apiClient.getEpisode(this.episodeId)
-            .then( episode => {
-
-                this.isLoading = false;
-                this.setState({
-                    ...this.state,
-                    episode: episode,
-                })
-                this.getCharacters(episode.characters)
-                this.props.navigation.setOptions({
-                    title: episode.name,
-                });
+        this.apiClient.getEpisode(this.episodeId).then( episode => {
+            
+            this.isLoading = false;
+            this.setState({
+                ...this.state,
+                episode: episode,
             })
-            .catch( error => {
-                console.error(error)
-                this.isLoading = false;
-            })
+            this.getCharacters(episode.characters)
+            this.props.navigation.setOptions({
+                title: episode.name,
+            });
+        })
+        .catch( error => {
+            console.error(error)
+            this.isLoading = false;
+        })
+        
+        AsyncStorage.getItem(this.key).then( isFavourite => {
+            this.setState({
+                isFavourite: isFavourite == 'true'
+            });
+        });
     }
 
     getCharacters(residents) {
@@ -72,6 +90,19 @@ export default class EpisodeDetails extends Component {
             .catch( error => {
                 console.error(error)
             })
+    }
+
+    renderRightHeader() {
+
+        var iconName = this.state.isFavourite ? 'heart' : 'hearto';
+        return (
+            <Icon
+                name={iconName}
+                size={25}
+                style={styles.favouriteHeaderButton}
+                onPress={this.onFavouriteButtonPressed.bind(this)}
+            />
+        );
     }
     
     render() {
@@ -169,6 +200,16 @@ export default class EpisodeDetails extends Component {
     onCharacterPressed(characterId) {
         this.props.navigation.navigate('CharacterDetails', { characterId: characterId });
     }
+
+    onFavouriteButtonPressed() {
+
+        var value = (!this.state.isFavourite).toString();
+        AsyncStorage.setItem(this.key, value).then( () => {
+            this.setState({
+                isFavourite: !this.state.isFavourite
+            });
+        });
+    }
 }
 
 const styles = StyleSheet.create({
@@ -210,5 +251,9 @@ const styles = StyleSheet.create({
         flex: 1,
         marginLeft: 10,
         justifyContent: 'center',
+    },
+    favouriteHeaderButton: {
+        marginStart: 10,
+        marginEnd: 10,
     },
 });

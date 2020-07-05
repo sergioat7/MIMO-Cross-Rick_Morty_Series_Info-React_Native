@@ -88,7 +88,7 @@ export default class CharacterList extends Component {
                     data={this.state.characters}
                     ListFooterComponent={this.renderFooter.bind(this)}
                     renderItem={ this.renderRow.bind(this) }
-                    keyExtractor={(item, index) => index.toString()}
+                    keyExtractor={(_, index) => index.toString()}
                     onEndReached={() => {
                         this.loadNextPage();
                     }}

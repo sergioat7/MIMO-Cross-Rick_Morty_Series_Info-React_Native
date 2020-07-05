@@ -7,6 +7,8 @@ import {
     StyleSheet,
     Button
 } from 'react-native';
+import Icon from 'react-native-vector-icons/AntDesign';
+import AsyncStorage from '@react-native-community/async-storage';
 
 export default class CharacterRow extends Component {
     
@@ -14,8 +16,28 @@ export default class CharacterRow extends Component {
         super(props);
         this.state = {
             character: props.character,
+            isFavourite: false,
             showStatus: props.showStatus,
         };
+        this.key = 'character' + props.character.id;
+    }
+
+    componentDidMount() {
+
+        AsyncStorage.getItem(this.key).then( isFavourite => {
+            this.setState({
+                isFavourite: isFavourite == 'true'
+            });
+        });
+    }
+
+    componentDidUpdate() {
+
+        AsyncStorage.getItem(this.key).then( isFavourite => {
+            this.setState({
+                isFavourite: isFavourite == 'true'
+            });
+        });
     }
     
     render() {
@@ -31,12 +53,19 @@ export default class CharacterRow extends Component {
                         source={{ uri: character.image }}
                     />
                     <View style={styles.titleContainer}>
+                        {this.getFavouriteImage()}
                         <Text style={{fontWeight: 'bold'}}>{character.name}</Text>
                         <Text>{character.species}</Text>
                     </View>
                     {this.getStatusElement()}
                 </View>
             </TouchableHighlight>
+        );
+    }
+
+    getFavouriteImage() {
+        return (
+            this.state.isFavourite ? <Icon name='heart'/> : null
         );
     }
     

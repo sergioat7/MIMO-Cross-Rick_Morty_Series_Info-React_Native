@@ -7,6 +7,8 @@ import {
     ActivityIndicator,
 } from 'react-native';
 import RickAndMortyApiClient from '../api/RickAndMortyApiClient'
+import Icon from 'react-native-vector-icons/AntDesign';
+import AsyncStorage from '@react-native-community/async-storage';
 
 export default class CharacterDetails extends Component {
     
@@ -18,31 +20,49 @@ export default class CharacterDetails extends Component {
         this.posterScale = new Animated.Value(0.5);
         this.scrollValue = new Animated.Value(0);
         this.characterId = params.characterId;
+        this.key = 'character' + params.characterId;
         this.state = {
             character: null,
             initialAnimation: true,
+            isFavourite: false,
         };
         this.apiClient = new RickAndMortyApiClient();
-        this.isLoading = true;
-    
+        this.isLoading = true
         props.navigation.setOptions({
-          title: "",
+            title: '',
+            headerTintColor: '#000000',
+        });
+    }
+
+    componentDidUpdate() {
+
+        this.props.navigation.setOptions({
+            headerRight: () => (
+                this.renderRightHeader()
+            ),
         });
     }
   
     componentDidMount() {
 
-        this.apiClient.getCharacter([this.characterId])
-            .then( characters => {
-                this.isLoading = false;
-                this.setState({ character: characters[0] });
-                this.props.navigation.setOptions({
-                    title: characters[0].name,
-                });
-            })
-            .catch( error => {
-                console.error(error)
-            })
+        this.apiClient.getCharacter([this.characterId]).then( characters => {
+            this.isLoading = false;
+            this.setState({
+                character: characters[0]
+            });
+            this.props.navigation.setOptions({
+                title: characters[0].name,
+            });
+        })
+        .catch( error => {
+            console.error(error)
+        })
+
+        AsyncStorage.getItem(this.key).then( isFavourite => {
+            this.setState({
+                isFavourite: isFavourite == 'true'
+            });
+        });
     
         Animated.sequence([
             Animated.parallel([
@@ -75,6 +95,19 @@ export default class CharacterDetails extends Component {
                 initialAnimation: false,
             })
         });
+    }
+
+    renderRightHeader() {
+
+        var iconName = this.state.isFavourite ? 'heart' : 'hearto';
+        return (
+            <Icon
+                name={iconName}
+                size={25}
+                style={styles.favouriteHeaderButton}
+                onPress={this.onFavouriteButtonPressed.bind(this)}
+            />
+        );
     }
     
     render() {
@@ -119,21 +152,24 @@ export default class CharacterDetails extends Component {
         return (
             <View style={styles.headerContainer}>
                 <Animated.Image 
-                style={[styles.image, {
-                    opacity: this.state.initialAnimation ? this.posterAlpha : this.scrollValue.interpolate({
-                        inputRange: [0, 150,],
-                        outputRange: [1.0, 0.0],
-                        extrapolate: 'clamp',
-                    }),
-                    transform: [{
-                        scale: this.posterScale,
-                    }],
-                }]}
-                resizeMode="contain"
-                source={{ uri: character.image }} 
+                    style={[styles.image, {
+                        opacity: this.state.initialAnimation ? this.posterAlpha : this.scrollValue.interpolate({
+                            inputRange: [0, 150,],
+                            outputRange: [1.0, 0.0],
+                            extrapolate: 'clamp',
+                        }),
+                        transform: [{
+                            scale: this.posterScale,
+                        }],
+                    }]}
+                    resizeMode="contain"
+                    source={{ uri: character.image }} 
                 />
                 <View style={styles.infoContainer}>
-                    <Text style={styles.infoTitle}>{species} / {character.gender}</Text>
+                    <View style={styles.infoTitle}>
+                        <Text>Species: </Text>
+                        <Text style={styles.infoTitle}>{species} / {character.gender}</Text>
+                    </View>
                     <View style={styles.infoTitle}>
                         <Text>Origin: </Text>
                         {this.getLocation(character.origin)}
@@ -202,6 +238,16 @@ export default class CharacterDetails extends Component {
         var episodeId = episodeUrl.split("/").pop()
         this.props.navigation.navigate('EpisodeDetails', { episodeId: episodeId });
     }
+
+    onFavouriteButtonPressed() {
+
+        var value = (!this.state.isFavourite).toString();
+        AsyncStorage.setItem(this.key, value).then( () => {
+            this.setState({
+                isFavourite: !this.state.isFavourite
+            });
+        });
+    }
 }
 
 const styles = StyleSheet.create({
@@ -254,5 +300,9 @@ const styles = StyleSheet.create({
         marginHorizontal: 2,
         marginVertical: 5,
         color: 'blue'
+    },
+    favouriteHeaderButton: {
+        marginStart: 10,
+        marginEnd: 10,
     },
 });
