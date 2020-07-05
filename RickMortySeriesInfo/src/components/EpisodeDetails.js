@@ -25,6 +25,7 @@ export default class EpisodeDetails extends Component {
             episode: null,
             characters: null,
             isFavourite: false,
+            isSettingFavourite: false,
         };
         this.apiClient = new RickAndMortyApiClient();
         this.isLoading = true;
@@ -95,14 +96,20 @@ export default class EpisodeDetails extends Component {
     renderRightHeader() {
 
         var iconName = this.state.isFavourite ? 'heart' : 'hearto';
-        return (
-            <Icon
-                name={iconName}
-                size={25}
-                style={styles.favouriteHeaderButton}
-                onPress={this.onFavouriteButtonPressed.bind(this)}
-            />
-        );
+        if (this.state.isSettingFavourite) {
+            return (
+                <ActivityIndicator style={styles.loading} size="large"/>
+            );
+        } else {
+            return (
+                <Icon
+                    name={iconName}
+                    size={25}
+                    style={styles.favouriteHeaderButton}
+                    onPress={this.onFavouriteButtonPressed.bind(this)}
+                />
+            );
+        }
     }
     
     render() {
@@ -203,10 +210,14 @@ export default class EpisodeDetails extends Component {
 
     onFavouriteButtonPressed() {
 
+        this.setState({
+            isSettingFavourite: true
+        });
         var value = (!this.state.isFavourite).toString();
         AsyncStorage.setItem(this.key, value).then( () => {
             this.setState({
-                isFavourite: !this.state.isFavourite
+                isFavourite: !this.state.isFavourite,
+                isSettingFavourite: false
             });
         });
     }
