@@ -16,8 +16,7 @@ export default class CharacterDetails extends Component {
         super(props);
     
         params = props.route.params;
-        this.posterAlpha = new Animated.Value(0);
-        this.posterScale = new Animated.Value(0.5);
+        this.springValue  = new Animated.Value(0);
         this.scrollValue = new Animated.Value(0);
         this.characterId = params.characterId;
         this.key = 'character' + params.characterId;
@@ -64,38 +63,18 @@ export default class CharacterDetails extends Component {
                 isFavourite: isFavourite == 'true'
             });
         });
-    
-        Animated.sequence([
-            Animated.parallel([
-                Animated.timing(this.posterAlpha, {
-                    duration: 1000,
-                    toValue: 1,
-                    useNativeDriver: true,
-                }),
-                Animated.spring(this.posterScale, {
-                    speed: 1,
-                    bounciness: 10,
-                    toValue: 1,
-                    useNativeDriver: true,
-                }),
-            ]),
-            Animated.timing(this.posterScale, {
-                toValue: -1,
-                duration: 1000,
-                useNativeDriver: true,
-            }),
-            Animated.timing(this.posterScale, {
-                toValue: 1,
-                delay: 1000,
-                duration: 1000,
-                useNativeDriver: true,
-            }),
-        ]).start(() => {
+
+        this.springValue.setValue(0)
+        Animated.spring(this.springValue, {
+            toValue: 1,
+            friction: 1,
+            useNativeDriver: true,
+        }).start(() => {
             this.setState({
                 ...this.state,
                 initialAnimation: false,
             })
-        });
+        })
     }
 
     renderRightHeader() {
@@ -159,16 +138,7 @@ export default class CharacterDetails extends Component {
         return (
             <View style={styles.headerContainer}>
                 <Animated.Image 
-                    style={[styles.image, {
-                        opacity: this.state.initialAnimation ? this.posterAlpha : this.scrollValue.interpolate({
-                            inputRange: [0, 150,],
-                            outputRange: [1.0, 0.0],
-                            extrapolate: 'clamp',
-                        }),
-                        transform: [{
-                            scale: this.posterScale,
-                        }],
-                    }]}
+                    style={[styles.image, { transform: [{scale: this.springValue}] }]}
                     resizeMode="contain"
                     source={{ uri: character.image }} 
                 />
