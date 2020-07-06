@@ -47,13 +47,15 @@ export default class CharacterRow extends Component {
         return (
             <TouchableHighlight onPress={this.props.onPress} underlayColor='lightgray'>
                 <View style={styles.mainContainer}>
-                    <Image
-                        style={styles.image}
-                        resizeMode="contain"
-                        source={{ uri: character.image }}
-                    />
-                    <View style={styles.titleContainer}>
+                    <View>
+                        <Image
+                            style={styles.image}
+                            resizeMode="contain"
+                            source={{ uri: character.image }}
+                        />
                         {this.getFavouriteImage()}
+                    </View>
+                    <View style={styles.titleContainer}>
                         <Text style={{fontWeight: 'bold'}}>{character.name}</Text>
                         <Text>{character.species}</Text>
                     </View>
@@ -64,8 +66,13 @@ export default class CharacterRow extends Component {
     }
 
     getFavouriteImage() {
+
+        var heartView = <View style={styles.overlay}>
+                            <Icon name='heart' style={{color: 'red'}} />
+                        </View>
+        
         return (
-            this.state.isFavourite ? <Icon name='heart'/> : null
+            this.state.isFavourite ? heartView : null
         );
     }
     
@@ -130,5 +137,14 @@ const styles = StyleSheet.create({
     image: {
         width: 50,
         height: 50,
-    }
+    },
+    overlay: {
+        position: 'absolute',
+        alignItems: 'flex-end',
+        justifyContent: 'flex-start',
+        left: 0,
+        right: 0,
+        top: 0,
+        bottom: 0,
+    },
 });
