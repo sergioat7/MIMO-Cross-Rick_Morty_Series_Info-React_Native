@@ -88,9 +88,9 @@ export default class CharacterRow extends Component {
     getStatusValue() {
         
         if (this.props.character.status == 'Alive') {
-            return (<Text style={styles.alive}>{this.props.character.status}</Text>);
+            return (<Text style={[styles.statusContainer, {color: '#00FF00'}]}>{this.props.character.status}</Text>);
         } else if (this.props.character.status == 'Dead') {
-            return (<Text style={styles.dead}>{this.props.character.status}</Text>);
+            return (<Text style={[styles.statusContainer, {color: '#FF0000'}]}>{this.props.character.status}</Text>);
         } else {
             return (<Text style={styles.statusContainer}>{this.props.character.status}</Text>);
         }
@@ -109,31 +109,6 @@ const styles = StyleSheet.create({
         padding: 10,
         alignItems: 'center',
     },
-    titleContainer: {
-        flex: 1,
-        marginLeft: 10,
-        justifyContent: 'center',
-    },
-    statusContainer: {
-        marginLeft: 10,
-        alignSelf: 'center',
-        textAlignVertical: 'center',
-        maxHeight: '50%',
-    },
-    alive: {
-        marginLeft: 10,
-        alignSelf: 'center',
-        textAlignVertical: 'center',
-        maxHeight: '50%',
-        color: '#00FF00',
-    },
-    dead: {
-        marginLeft: 10,
-        alignSelf: 'center',
-        textAlignVertical: 'center',
-        maxHeight: '50%',
-        color: '#FF0000',
-    },
     image: {
         width: 50,
         height: 50,
@@ -146,5 +121,16 @@ const styles = StyleSheet.create({
         right: 0,
         top: 0,
         bottom: 0,
+    },
+    titleContainer: {
+        flex: 1,
+        marginLeft: 10,
+        justifyContent: 'center',
+    },
+    statusContainer: {
+        marginLeft: 10,
+        alignSelf: 'center',
+        textAlignVertical: 'center',
+        maxHeight: '50%',
     },
 });
