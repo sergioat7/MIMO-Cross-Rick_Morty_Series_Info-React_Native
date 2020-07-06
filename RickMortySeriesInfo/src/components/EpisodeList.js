@@ -129,7 +129,7 @@ export default class EpisodeList extends Component {
     }
     
     onEpisodePressed(episodeId) {
-        this.props.navigation.navigate('EpisodeDetails', { episodeId: episodeId });
+        this.props.navigation.push('EpisodeDetails', { episodeId: episodeId });
     }
 }
 
