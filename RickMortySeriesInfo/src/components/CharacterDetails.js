@@ -241,13 +241,13 @@ export default class CharacterDetails extends Component {
     onLocationPressed(locationUrl) {
 
         var locationId = locationUrl.split("/").pop()
-        this.props.navigation.navigate('LocationDetails', { locationId: locationId});
+        this.props.navigation.push('LocationDetails', { locationId: locationId});
     }
 
     onEpisodePressed(episodeUrl) {
 
         var episodeId = episodeUrl.split("/").pop()
-        this.props.navigation.navigate('EpisodeDetails', { episodeId: episodeId });
+        this.props.navigation.push('EpisodeDetails', { episodeId: episodeId });
     }
 
     onFavouriteButtonPressed() {

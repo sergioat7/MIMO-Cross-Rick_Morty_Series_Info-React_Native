@@ -129,7 +129,7 @@ export default class LocationList extends Component {
     }
     
     onLocationPressed(location) {
-        this.props.navigation.navigate('LocationDetails', { locationId: location.id });
+        this.props.navigation.push('LocationDetails', { locationId: location.id });
     }
 }
 

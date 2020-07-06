@@ -205,7 +205,7 @@ export default class EpisodeDetails extends Component {
     }
 
     onCharacterPressed(characterId) {
-        this.props.navigation.navigate('CharacterDetails', { characterId: characterId });
+        this.props.navigation.push('CharacterDetails', { characterId: characterId });
     }
 
     onFavouriteButtonPressed() {
