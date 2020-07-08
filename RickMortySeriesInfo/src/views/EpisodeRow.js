@@ -61,13 +61,13 @@ export default class EpisodeRow extends Component {
 
     getFavouriteImage() {
         return (
-            this.state.isFavourite ? <Icon name='heart' style={{alignSelf: 'center'}}/> : null
+            this.state.isFavourite ? <Icon name='heart' style={styles.favouriteIcon}/> : null
         );
     }
 }
 
 const styles = StyleSheet.create({
-    
+
     mainContainer: {
         flex: 1,
         flexDirection: 'row',
@@ -77,5 +77,9 @@ const styles = StyleSheet.create({
         flex: 1,
         marginLeft: 10,
         justifyContent: 'center',
+    },
+    favouriteIcon: {
+        alignSelf: 'center',
+        color: 'red',
     },
 });

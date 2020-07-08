@@ -56,7 +56,7 @@ export default class LocationRow extends Component {
 
     getFavouriteImage() {
         return (
-            this.state.isFavourite ? <Icon name='heart'/> : <Text> - </Text>
+            this.state.isFavourite ? <Icon name='heart' style={styles.favouriteIcon}/> : <Text> - </Text>
         );
     }
 }
@@ -72,5 +72,9 @@ const styles = StyleSheet.create({
         flex: 1,
         marginLeft: 10,
         justifyContent: 'center',
+    },
+    favouriteIcon: {
+        alignSelf: 'center',
+        color: 'red',
     },
 });

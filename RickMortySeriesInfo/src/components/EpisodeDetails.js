@@ -266,5 +266,6 @@ const styles = StyleSheet.create({
     favouriteHeaderButton: {
         marginStart: 10,
         marginEnd: 10,
+        color: 'red',
     },
 });
