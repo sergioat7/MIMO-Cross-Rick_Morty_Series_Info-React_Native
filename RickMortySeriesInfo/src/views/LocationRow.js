@@ -27,15 +27,6 @@ export default class LocationRow extends Component {
             });
         });
     }
-
-    componentDidUpdate() {
-
-        AsyncStorage.getItem(this.key).then( isFavourite => {
-            this.setState({
-                isFavourite: isFavourite == 'true'
-            });
-        });
-    }
     
     render() {
 

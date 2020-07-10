@@ -120,12 +120,12 @@ export default class LocationList extends Component {
 
     onPullToRefresh() {
 
-        this.setState({
-            ...this.state,
-            isRefreshing: true,
-        })
         this.nextPage = 1;
-        this.loadNextPage();
+
+        this.setState({
+            locations: [],
+            isRefreshing: true,
+        }, this.loadNextPage() );
     }
     
     onLocationPressed(location) {
