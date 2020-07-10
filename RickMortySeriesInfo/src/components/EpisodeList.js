@@ -120,12 +120,12 @@ export default class EpisodeList extends Component {
 
     onPullToRefresh() {
 
-        this.setState({
-            ...this.state,
-            isRefreshing: true,
-        })
         this.nextPage = 1;
-        this.loadNextPage();
+
+        this.setState({
+            episodes: [],
+            isRefreshing: true,
+        }, this.loadNextPage() );
     }
     
     onEpisodePressed(episodeId) {
