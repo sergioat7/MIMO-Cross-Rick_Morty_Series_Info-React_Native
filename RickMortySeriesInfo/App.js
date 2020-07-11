@@ -8,12 +8,14 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import AsyncStorage from '@react-native-community/async-storage';
+import { Provider } from 'mobx-react';
 import CharacterList from './src/components/CharacterList'
 import LocationList from './src/components/LocationList'
 import EpisodeList from './src/components/EpisodeList'
 import CharacterDetails from './src/components/CharacterDetails'
 import LocationDetails from './src/components/LocationDetails'
 import EpisodeDetails from './src/components/EpisodeDetails'
+import FavouriteStore from './src/providers/FavouriteStore'
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -127,7 +129,13 @@ export default class App extends Component<Props> {
         }
             
         this.navigationContainer = () => {
-            return (<NavigationContainer><this.mainTab /></NavigationContainer>);
+            return (
+                <Provider store={FavouriteStore}>
+                    <NavigationContainer>
+                        <this.mainTab />
+                    </NavigationContainer>
+                </Provider>
+            );
         };
                 
         this.setState({
