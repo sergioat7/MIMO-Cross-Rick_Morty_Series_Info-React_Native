@@ -130,7 +130,7 @@ export default class App extends Component<Props> {
             
         this.navigationContainer = () => {
             return (
-                <Provider store={FavouriteStore}>
+                <Provider store={new FavouriteStore()}>
                     <NavigationContainer>
                         <this.mainTab />
                     </NavigationContainer>
