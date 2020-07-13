@@ -46,7 +46,6 @@ export default class LocationRow extends Component {
     getFavouriteImage() {
 
         const isFavourite = this.favouriteLocations.has(this.props.location.id) && this.favouriteLocations.get(this.props.location.id);
-
         return (
             isFavourite ? <Icon name='heart' style={styles.favouriteIcon}/> : <Text> - </Text>
         );

@@ -59,16 +59,9 @@ export default class CharacterRow extends Component {
     getFavouriteImage() {
 
         const isFavourite = this.favouriteCharacters.has(this.props.character.id) && this.favouriteCharacters.get(this.props.character.id);
-
-        if (isFavourite) {
-            return (
-                <View style={styles.overlay}>
-                     <Icon name='heart' style={{color: 'red'}} />
-                </View>
-            );
-        } else {
-            return null
-        }
+        return (
+            isFavourite ? <View style={styles.overlay}><Icon name='heart' style={{color: 'red'}} /></View> : null
+        );
     }
     
     getStatusElement() {
