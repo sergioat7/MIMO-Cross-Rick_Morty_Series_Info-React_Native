@@ -5,14 +5,9 @@ import {
 
 export default class FavouriteStore {
     
-  @observable isLoading = true;
-
-
-  @action loadingCompleted() {
-    this.isLoading = false;
-  }
-
-  @action toggleLoading() {
-      this.isLoading = !this.isLoading;
-  }
+    @observable favouriteCharacters = new Map();
+  
+    @action addCharacter(characterId, value) {
+        this.favouriteCharacters.set(characterId, value);
+    }
 }

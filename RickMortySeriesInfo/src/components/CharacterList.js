@@ -25,7 +25,7 @@ export default class CharacterList extends Component {
     }
     
     componentDidMount() {
-        this.loadNextPage()
+        this.loadNextPage();
     }
     
     loadNextPage() {

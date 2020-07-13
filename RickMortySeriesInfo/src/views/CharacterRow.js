@@ -9,25 +9,25 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/AntDesign';
 import AsyncStorage from '@react-native-community/async-storage';
+import { inject, observer  } from 'mobx-react';
 
+@inject('store')
+@observer
 export default class CharacterRow extends Component {
     
     constructor(props) {
         super(props);
         this.state = {
-            character: props.character,
-            isFavourite: false,
             showStatus: props.showStatus,
         };
         this.key = 'character' + props.character.id;
+        this.favouriteCharacters = props.store.favouriteCharacters;
     }
 
     componentDidMount() {
 
         AsyncStorage.getItem(this.key).then( isFavourite => {
-            this.setState({
-                isFavourite: isFavourite == 'true'
-            });
+            this.props.store.addCharacter(this.props.character.id, isFavourite == 'true');
         });
     }
     
@@ -58,13 +58,17 @@ export default class CharacterRow extends Component {
 
     getFavouriteImage() {
 
-        var heartView = <View style={styles.overlay}>
-                            <Icon name='heart' style={{color: 'red'}} />
-                        </View>
-        
-        return (
-            this.state.isFavourite ? heartView : null
-        );
+        const isFavourite = this.favouriteCharacters.has(this.props.character.id) && this.favouriteCharacters.get(this.props.character.id);
+
+        if (isFavourite) {
+            return (
+                <View style={styles.overlay}>
+                     <Icon name='heart' style={{color: 'red'}} />
+                </View>
+            );
+        } else {
+            return null
+        }
     }
     
     getStatusElement() {
