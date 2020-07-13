@@ -7,24 +7,22 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/AntDesign';
 import AsyncStorage from '@react-native-community/async-storage';
+import { inject, observer  } from 'mobx-react';
 
+@inject('store')
+@observer
 export default class EpisodeRow extends Component {
     
     constructor(props) {
         super(props);
-        this.state = {
-            episode: props.episode,
-            isFavourite: false,
-        };
         this.key = 'episode' + props.episode.id;
+        this.favouriteEpisodes = props.store.favouriteEpisodes;
     }
 
     componentDidMount() {
 
         AsyncStorage.getItem(this.key).then( isFavourite => {
-            this.setState({
-                isFavourite: isFavourite == 'true'
-            });
+            this.props.store.addEpisode(this.props.episode.id, isFavourite == 'true');
         });
     }
     
@@ -51,8 +49,10 @@ export default class EpisodeRow extends Component {
     }
 
     getFavouriteImage() {
+
+        const isFavourite = this.favouriteEpisodes.has(this.props.episode.id) && this.favouriteEpisodes.get(this.props.episode.id);
         return (
-            this.state.isFavourite ? <Icon name='heart' style={styles.favouriteIcon}/> : null
+            isFavourite ? <Icon name='heart' style={styles.favouriteIcon}/> : null
         );
     }
 }

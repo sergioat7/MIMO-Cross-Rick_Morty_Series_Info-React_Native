@@ -18,4 +18,11 @@ export default class FavouriteStore {
     @action addLocation(locationId, value) {
         this.favouriteLocations.set(locationId, value);
     }
+    
+    // EPISODES
+    @observable favouriteEpisodes = new Map();
+  
+    @action addEpisode(episodeId, value) {
+        this.favouriteEpisodes.set(episodeId, value);
+    }
 }
