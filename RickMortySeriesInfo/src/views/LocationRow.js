@@ -7,24 +7,22 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/AntDesign';
 import AsyncStorage from '@react-native-community/async-storage';
+import { inject, observer  } from 'mobx-react';
 
+@inject('store')
+@observer
 export default class LocationRow extends Component {
     
     constructor(props) {
         super(props);
-        this.state = {
-            location: props.location,
-            isFavourite: false,
-        };
         this.key = 'location' + props.location.id;
+        this.favouriteLocations = props.store.favouriteLocations;
     }
 
     componentDidMount() {
 
         AsyncStorage.getItem(this.key).then( isFavourite => {
-            this.setState({
-                isFavourite: isFavourite == 'true'
-            });
+            this.props.store.addLocation(this.props.location.id, isFavourite == 'true');
         });
     }
     
@@ -46,8 +44,10 @@ export default class LocationRow extends Component {
     }
 
     getFavouriteImage() {
+
+        const isFavourite = this.favouriteLocations.has(this.props.location.id) && this.favouriteLocations.get(this.props.location.id);
         return (
-            this.state.isFavourite ? <Icon name='heart' style={styles.favouriteIcon}/> : <Text> - </Text>
+            isFavourite ? <Icon name='heart' style={styles.favouriteIcon}/> : <Text> - </Text>
         );
     }
 }
