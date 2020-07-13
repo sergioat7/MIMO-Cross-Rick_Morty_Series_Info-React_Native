@@ -11,7 +11,9 @@ import {
 import RickAndMortyApiClient from '../api/RickAndMortyApiClient'
 import Icon from 'react-native-vector-icons/AntDesign';
 import AsyncStorage from '@react-native-community/async-storage';
+import { inject } from 'mobx-react';
 
+@inject('store')
 export default class LocationDetails extends Component {
     
     constructor(props) {
@@ -208,12 +210,17 @@ export default class LocationDetails extends Component {
         this.setState({
             isSettingFavourite: true
         });
-        var value = (!this.state.isFavourite).toString();
-        AsyncStorage.setItem(this.key, value).then( () => {
+        var value = !this.state.isFavourite;
+        var valueStr = value.toString();
+
+        AsyncStorage.setItem(this.key, valueStr).then( () => {
+
             this.setState({
                 isFavourite: !this.state.isFavourite,
                 isSettingFavourite: false
             });
+
+            this.props.store.addLocation(this.locationId, value);
         });
     }
 }
