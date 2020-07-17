@@ -1,114 +1,149 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow strict-local
- */
-
-import React from 'react';
+import 'react-native-gesture-handler';
+import React, { Component } from 'react';
 import {
-  SafeAreaView,
-  StyleSheet,
-  ScrollView,
-  View,
-  Text,
-  StatusBar,
+    View,
+    Image
 } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createStackNavigator } from '@react-navigation/stack';
+import AsyncStorage from '@react-native-community/async-storage';
+import { Provider } from 'mobx-react';
+import CharacterList from './src/components/CharacterList'
+import LocationList from './src/components/LocationList'
+import EpisodeList from './src/components/EpisodeList'
+import CharacterDetails from './src/components/CharacterDetails'
+import LocationDetails from './src/components/LocationDetails'
+import EpisodeDetails from './src/components/EpisodeDetails'
+import FavouriteStore from './src/providers/FavouriteStore'
 
-import {
-  Header,
-  LearnMoreLinks,
-  Colors,
-  DebugInstructions,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+const Tab = createBottomTabNavigator();
+const Stack = createStackNavigator();
 
-const App: () => React$Node = () => {
-  return (
-    <>
-      <StatusBar barStyle="dark-content" />
-      <SafeAreaView>
-        <ScrollView
-          contentInsetAdjustmentBehavior="automatic"
-          style={styles.scrollView}>
-          <Header />
-          {global.HermesInternal == null ? null : (
-            <View style={styles.engine}>
-              <Text style={styles.footer}>Engine: Hermes</Text>
-            </View>
-          )}
-          <View style={styles.body}>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Step One</Text>
-              <Text style={styles.sectionDescription}>
-                Edit <Text style={styles.highlight}>App.js</Text> to change this
-                screen and then come back to see your edits.
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>See Your Changes</Text>
-              <Text style={styles.sectionDescription}>
-                <ReloadInstructions />
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Debug</Text>
-              <Text style={styles.sectionDescription}>
-                <DebugInstructions />
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Learn More</Text>
-              <Text style={styles.sectionDescription}>
-                Read the docs to discover what to do next:
-              </Text>
-            </View>
-            <LearnMoreLinks />
-          </View>
-        </ScrollView>
-      </SafeAreaView>
-    </>
-  );
-};
+type Props = {};
+export default class App extends Component<Props> {
+    
+    constructor(props) {
+        super(props);
+        
+        this.state = {
+            ready: false,
+        };
+    }
+    
+    componentDidMount() {
+        
+        AsyncStorage.getItem('lastSelectedTab').then((lastSelectedTab) => {
+            this.createMainNavigation(lastSelectedTab);
+        });
+    }
 
-const styles = StyleSheet.create({
-  scrollView: {
-    backgroundColor: Colors.lighter,
-  },
-  engine: {
-    position: 'absolute',
-    right: 0,
-  },
-  body: {
-    backgroundColor: Colors.white,
-  },
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: Colors.black,
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-    color: Colors.dark,
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-  footer: {
-    color: Colors.dark,
-    fontSize: 12,
-    fontWeight: '600',
-    padding: 4,
-    paddingRight: 12,
-    textAlign: 'right',
-  },
-});
-
-export default App;
+    getScreens() {
+        return [
+            <Stack.Screen key="CharacterDetails" name="CharacterDetails" component={CharacterDetails} />,
+            <Stack.Screen key="LocationDetails" name="LocationDetails" component={LocationDetails} />,
+            <Stack.Screen key="EpisodeDetails" name="EpisodeDetails" component={EpisodeDetails} />,
+        ];
+    }
+    
+    createMainNavigation(initialTab) {
+        
+        this.charactersStack = () => {
+            return (
+                <Stack.Navigator>
+                    <Stack.Screen name="Characters" component={CharacterList} />
+                    {this.getScreens()}
+                </Stack.Navigator>
+            );
+        };
+            
+        this.locationsStack = () => {
+            return (
+                <Stack.Navigator>
+                    <Stack.Screen name="Locations" component={LocationList} />
+                    {this.getScreens()}
+                </Stack.Navigator>
+                );
+        };
+        
+        this.episodesStack = () => {
+            return (
+                <Stack.Navigator>
+                    <Stack.Screen name="Episodes" component={EpisodeList} />
+                    {this.getScreens()}
+                </Stack.Navigator>
+            );
+        };
+        
+        this.mainTab = () => {
+            
+            function tabBarOnPress(tabName) {
+                return () => {
+                    AsyncStorage.setItem('lastSelectedTab', tabName);
+                };
+            };
+                
+            return (
+                <Tab.Navigator
+                    initialRouteName={initialTab}
+                    backBehavior="none"
+                    tabBarOptions={{
+                        activeTintColor: '#00afc7',
+                    }}
+                >
+                    <Tab.Screen
+                        name="characters"
+                        component={this.charactersStack}
+                        listeners={{ tabPress: tabBarOnPress("characters") }}
+                        options={{
+                            tabBarLabel: 'Characters',
+                            tabBarIcon: () => (
+                                <Image source={require('./src/assets/characters.png')} />
+                            ),
+                        }}
+                    />
+                    <Tab.Screen
+                        name="locations"
+                        component={this.locationsStack}
+                        listeners={{ tabPress: tabBarOnPress("locations") }}
+                        options={{
+                            tabBarLabel: 'Locations',
+                            tabBarIcon: () => (
+                                <Image source={require('./src/assets/locations.png')} />
+                            ),
+                        }}
+                    />
+                    <Tab.Screen
+                        name="episodes"
+                        component={this.episodesStack}
+                        listeners={{ tabPress: tabBarOnPress("episodes") }}
+                        options={{
+                            tabBarLabel: 'Episodes',
+                            tabBarIcon: () => (
+                                <Image source={require('./src/assets/episodes.png')} />
+                            ),
+                        }}
+                    />
+                </Tab.Navigator>
+            );
+        }
+            
+        this.navigationContainer = () => {
+            return (
+                <Provider store={new FavouriteStore()}>
+                    <NavigationContainer>
+                        <this.mainTab />
+                    </NavigationContainer>
+                </Provider>
+            );
+        };
+                
+        this.setState({
+            ready: true,
+        });
+    }
+        
+    render() {
+        return (this.state.ready ? <this.navigationContainer /> : <View />);
+    }
+}
